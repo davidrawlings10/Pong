@@ -28,9 +28,9 @@ public class Ball {
 
     public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
         if (getRight() > SCREEN_WIDTH && getSpeedX() > 0 || getLeft() < 0 && getSpeedX() < 0)
-            setSpeedX(getSpeedX() * -1);
+            setSpeedX((int)Math.round(getSpeedX() * -0.8));
         if (getBottom() > SCREEN_HEIGHT && getSpeedY() > 0 || getTop() < 0 && getSpeedY() < 0)
-            setSpeedY(getSpeedY() * -1);
+            setSpeedY(getSpeedY() * -2);
     }
 
     public void handleCollision(Object object) {
