@@ -21,6 +21,18 @@ public class Ball {
         speedY = 0;
     }
 
+    public void updatePos() {
+        pos.x += getSpeedX();
+        pos.y += getSpeedY();
+    }
+
+    public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        if (getRight() > SCREEN_WIDTH && getSpeedX() > 0 || getLeft() < 0 && getSpeedX() < 0)
+            setSpeedX(getSpeedX() * -1);
+        if (getBottom() > SCREEN_HEIGHT && getSpeedY() > 0 || getTop() < 0 && getSpeedY() < 0)
+            setSpeedY(getSpeedY() * -1);
+    }
+
     public void handleCollision(Object object) {
        int bottom_distance = object.getTop() - getBottom();
         int top_distance = getTop() - object.getBottom();
