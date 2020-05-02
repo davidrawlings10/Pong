@@ -39,12 +39,7 @@ public class Ball {
         dirY = 1;
     }
 
-    public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-        Collision collision = testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        if (collision == null)
-            return;
-
+    public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT, Collision collision) {
         if (collision.equals(Collision.LEFT) || collision.equals(Collision.RIGHT)) {
             dirX *= -1;
         }
@@ -69,12 +64,7 @@ public class Ball {
         return null;
     }
 
-    public void handleCollision(Object object) {
-        Collision collision = testCollision(object);
-
-        if (collision == null)
-            return;
-
+    public void handleCollision(Object object, Collision collision) {
         if (collision.equals(Collision.TOP)) {
             dirY *= -1;
             speedX += 1;

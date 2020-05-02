@@ -3,7 +3,16 @@ package com.example.pong;
 import android.graphics.Point;
 
 public class OpponentBrain {
-    public static Point getOpponentPos(Object opponent, Ball ball, int SCREEN_HEIGHT) {
+    private int responseSpeed;
+    private int responseDelay;
+    private int timeToResponse;
+
+    public Point getOpponentPos(Object opponent, Ball ball, int SCREEN_HEIGHT) {
+        if (timeToResponse > 0) {
+            timeToResponse -= 1;
+            return opponent.getPos();
+        }
+
         Point opponentPos = opponent.getPos();
         Point ballPos = ball.getPos();
 
@@ -17,5 +26,14 @@ public class OpponentBrain {
             opponentPos.x -= 20;
 
         return opponentPos;
+    }
+
+    public void setBrain(int brain) {
+        responseSpeed = 10;
+        responseDelay = 30;
+    }
+
+    public void ballCollision() {
+        timeToResponse = responseDelay;
     }
 }

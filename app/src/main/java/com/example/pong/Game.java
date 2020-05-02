@@ -21,6 +21,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Object goalPostB;
     private Object goalPostC;
     private Object goalPostD;
+    private OpponentBrain opponentBrain;
 
     public Game(Context context) {
         super(context);
@@ -52,13 +53,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         opponent = new Object(paddleWidth, paddleHeight, opponentX, opponentY);
 
+        opponentBrain = new OpponentBrain();
+
         int goalPostWidthHeight = (int)Math.round(SCREEN_HEIGHT * 0.1);
         goalPostA = new Object(goalPostWidthHeight, goalPostWidthHeight, goalPostWidthHeight / 2, goalPostWidthHeight / 2);
         goalPostB = new Object(goalPostWidthHeight, goalPostWidthHeight, SCREEN_WIDTH - goalPostWidthHeight / 2, goalPostWidthHeight / 2);
         goalPostC = new Object(goalPostWidthHeight, goalPostWidthHeight, goalPostWidthHeight / 2, SCREEN_HEIGHT - goalPostWidthHeight / 2);
         goalPostD = new Object(goalPostWidthHeight, goalPostWidthHeight, SCREEN_WIDTH - goalPostWidthHeight / 2, SCREEN_HEIGHT - goalPostWidthHeight / 2);
 
+        setup(50);
+
         setFocusable(true);
+    }
+
+    private void setup(int brain) {
+        opponentBrain.setBrain(brain);
     }
 
     @Override
@@ -103,33 +112,31 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         ball.updatePos();
 
-        opponent.update(OpponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT);
+        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        ball.handleCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
+        Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
+        if (collisionWall != null) {
+            ball.handleCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT, collisionWall);
+        }
 
-        ball.handleCollision(player);
-        ball.handleCollision(opponent);
+        Collision collisionPlayer = ball.testCollision(player);
+        if (collisionPlayer != null) {
+            ball.handleCollision(player, collisionPlayer);
+        }
 
-        ball.handleCollision(goalPostA);
+        Collision collisionOpponent = ball.testCollision(opponent);
+        if (collisionOpponent != null) {
+            ball.handleCollision(opponent, collisionOpponent);
+        }
+
+        if (collisionWall != null || collisionPlayer != null || collisionOpponent != null) {
+            opponentBrain.ballCollision();
+        }
+
+        /*ball.handleCollision(goalPostA);
         ball.handleCollision(goalPostB);
         ball.handleCollision(goalPostC);
-        ball.handleCollision(goalPostD);
-    }
-
-    public Point getOpponentPos(Object opponent, Ball ball) {
-        Point opponentPos = opponent.getPos();
-        Point ballPos = ball.getPos();
-
-        if (ballPos.y > opponentPos.y && opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.3))
-            opponentPos.y += 5;
-        if (ballPos.y < opponentPos.y)
-            opponentPos.y -= 10;
-        if (ballPos.x > opponentPos.x)
-            opponentPos.x += 20;
-        if (ballPos.x < opponentPos.x)
-            opponentPos.x -= 20;
-
-        return opponentPos;
+        ball.handleCollision(goalPostD);*/
     }
 
     @Override
