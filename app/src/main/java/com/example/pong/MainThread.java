@@ -7,14 +7,14 @@ public class MainThread extends Thread {
     public static final int MAX_FPS = 30;
     // private double averageFPS;
     private SurfaceHolder surfaceHolder;
-    private Surface surface;
+    private Game game;
     private boolean running;
     public static Canvas canvas;
 
-    public MainThread(SurfaceHolder surfaceHolder, Surface surface) {
+    public MainThread(SurfaceHolder surfaceHolder, Game game) {
         super();
         this.surfaceHolder = surfaceHolder;
-        this.surface = surface;
+        this.game = game;
     }
 
     public void setRunning(boolean running) {
@@ -37,8 +37,8 @@ public class MainThread extends Thread {
             try {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    this.surface.update();
-                    this.surface.draw(canvas);
+                    this.game.update();
+                    this.game.draw(canvas);
                 }
             } catch(Exception e) {
                 e.printStackTrace();

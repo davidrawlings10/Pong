@@ -24,20 +24,26 @@ public class Object {
         paint.setColor(Color.BLACK);
     }
 
-    public void update(int x, int y, int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-        if (x - getWIDTH() / 2 < 0)
-            x = getWIDTH() / 2;
-        if (y - getHEIGHT() / 2 < 0)
-            y = getHEIGHT() / 2;
-        if (x + getWIDTH() / 2 > SCREEN_WIDTH)
-            x = SCREEN_WIDTH - getWIDTH() / 2;
-        if (y - getHEIGHT() / 2 > SCREEN_HEIGHT)
-            y = SCREEN_HEIGHT - getHEIGHT() / 2;
+    public void update(Point newPos, int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        adjustPosForScreen(newPos, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        xSpeed = pos.x - x;
-        ySpeed = pos.y - y;
+        xSpeed = pos.x - newPos.x;
+        ySpeed = pos.y - newPos.y;
 
-        pos.set(x, y);
+        pos.set(newPos.x, newPos.y);
+    }
+
+    private Point adjustPosForScreen(Point newPos, int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        if (newPos.x - getWIDTH() / 2 < 0)
+            newPos.x = getWIDTH() / 2;
+        if (newPos.y - getHEIGHT() / 2 < 0)
+            newPos.y = getHEIGHT() / 2;
+        if (newPos.x + getWIDTH() / 2 > SCREEN_WIDTH)
+            newPos.x = SCREEN_WIDTH - getWIDTH() / 2;
+        if (newPos.y - getHEIGHT() / 2 > SCREEN_HEIGHT)
+            newPos.y = SCREEN_HEIGHT - getHEIGHT() / 2;
+
+        return pos;
     }
 
     public void draw(Canvas canvas) {

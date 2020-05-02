@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class Surface extends SurfaceView implements SurfaceHolder.Callback {
+public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread mainThread;
     private int SCREEN_HEIGHT;
     private int SCREEN_WIDTH;
@@ -22,7 +22,7 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
     private Object goalPostC;
     private Object goalPostD;
 
-    public Surface(Context context) {
+    public Game(Context context) {
         super(context);
 
         getHolder().addCallback(this);
@@ -85,21 +85,25 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch(event.getAction()) {
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            player.update(new Point((int)event.getX(), (int)event.getY() - 150), SCREEN_WIDTH, SCREEN_HEIGHT);
+        }
+
+        return true;
+
+        /* switch(event.getAction()) { `1
             // case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
                 player.update((int)event.getX(), (int)event.getY() - 150, SCREEN_WIDTH, SCREEN_HEIGHT);
         }
         return true;
-        // return super.onTouchEvent(event);
+        // return super.onTouchEvent(event); */
     }
 
     public void update() {
         ball.updatePos();
 
-        Point pos = getOpponentPos(opponent, ball);
-
-        opponent.update(pos.x, pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+        opponent.update(OpponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT);
 
         ball.handleCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
