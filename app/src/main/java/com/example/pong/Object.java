@@ -10,7 +10,6 @@ public class Object {
     final private int WIDTH;
     final private int HEIGHT;
     private Point pos;
-    private Point lastPos;
     private Rect rect;
     private Paint paint;
     private int xSpeed;
@@ -20,16 +19,24 @@ public class Object {
         WIDTH = width;
         HEIGHT = height;
         pos = new Point(x, y);
-        lastPos = new Point(x, y);
         rect = new Rect();
         paint = new Paint();
         paint.setColor(Color.BLACK);
     }
 
-    public void update(int x, int y) {
-        lastPos.set(pos.x, pos.y);
-        ySpeed = pos.y - y;
+    public void update(int x, int y, int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        if (x - getWIDTH() / 2 < 0)
+            x = getWIDTH() / 2;
+        if (y - getHEIGHT() / 2 < 0)
+            y = getHEIGHT() / 2;
+        if (x + getWIDTH() / 2 > SCREEN_WIDTH)
+            x = SCREEN_WIDTH - getWIDTH() / 2;
+        if (y - getHEIGHT() / 2 > SCREEN_HEIGHT)
+            y = SCREEN_HEIGHT - getHEIGHT() / 2;
+
         xSpeed = pos.x - x;
+        ySpeed = pos.y - y;
+
         pos.set(x, y);
     }
 
@@ -45,8 +52,6 @@ public class Object {
     public Point getPos() {
         return pos;
     }
-
-    public Point getLastPos() { return lastPos; }
 
     public int getWIDTH() { return WIDTH; }
 

@@ -11,68 +11,132 @@ public class Ball {
     private Paint paint;
     private int speedX;
     private int speedY;
+    private int dirY;
+    private int dirX;
 
     public Ball(int radius, int x, int y) {
         RADIUS = radius;
-        pos = new Point(x, y);
         paint = new Paint();
         paint.setColor(Color.BLACK);
-        speedX = 0;
-        speedY = 0;
+        pos = new Point(x, y);
+        speedX = 10;
+        speedY = 10;
+        dirX = 1;
+        dirY = 1;
     }
 
     public void updatePos() {
-        pos.x += getSpeedX();
-        pos.y += getSpeedY();
+        pos.x += getSpeedX() * dirX;
+        pos.y += getSpeedY() * dirY;
     }
 
     public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-        if (getRight() > SCREEN_WIDTH && getSpeedX() > 0 || getLeft() < 0 && getSpeedX() < 0)
+        Collision collision = testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        if (collision == null)
+            return;
+
+        if (collision.equals(Collision.LEFT) || collision.equals(Collision.RIGHT)) {
+            dirX *= -1;
+            // setSpeedX((int)Math.round(getSpeedX() * -0.8));
+            // setSpeedX((int)Math.round(getSpeedX() * -1));
+        }
+        if (collision.equals(Collision.TOP) || collision.equals(Collision.BOTTOM)) {
+            dirY *= -1;
+            reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+            // setSpeedY(getSpeedY() * -2);
+            // setSpeedY(getSpeedY() * -1);
+        }
+
+
+        /*if (getRight() > SCREEN_WIDTH && getSpeedX() > 0 || getLeft() < 0 && getSpeedX() < 0)
             setSpeedX((int)Math.round(getSpeedX() * -0.8));
         if (getBottom() > SCREEN_HEIGHT && getSpeedY() > 0 || getTop() < 0 && getSpeedY() < 0)
-            setSpeedY(getSpeedY() * -2);
+            setSpeedY(getSpeedY() * -2);*/
+
+        System.out.println("getSpeedX:" + getSpeedX() + ", getSpeedY:" + getSpeedY() + ", dirX:" + dirX + ", dirY:" + dirY);
+    }
+
+    private void reset(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        pos.x = SCREEN_WIDTH / 2;
+        pos.y = SCREEN_HEIGHT / 2;
+        speedX = 10;
+        speedY = 10;
+        dirX = 1;
+        dirY = 1;
+    }
+
+    public Collision testCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+        if (getTop() < 0 && dirY < 0)
+            return Collision.TOP;
+        if (getBottom() > SCREEN_HEIGHT && dirY > 0)
+            return Collision.BOTTOM;
+        if (getLeft() < 0 && dirX < 0)
+            return Collision.LEFT;
+        if (getRight() > SCREEN_WIDTH && dirX > 0)
+            return Collision.RIGHT;
+
+        return null;
     }
 
     public void handleCollision(Object object) {
+        /*int distance_from_top = getTop() - object.getBottom();
+        int distance_from_bottom = object.getTop() - getBottom();
+        int distance_from_left = getLeft() - object.getRight();
+        int distance_from_right = object.getLeft() - getRight();
+
+        if (distance_from_bottom >= 0 || distance_from_top >= 0 || distance_from_right >= 0 || distance_from_left > 0)
+            return;*/
+
+        Collision collision = testCollision(object);
+
+        if (collision == null)
+            return;
+
+        if (collision.equals(Collision.TOP)) {
+            dirY *= -1;
+            // int newSpeedY = Math.min(-object.getySpeed() / 4 + 10, 40);
+            // setSpeedY(-getSpeedY() + 1);
+            // setSpeedX(getSpeedX() + 1);
+            // setSpeedX(getSpeedX() - object.getxSpeed() / 4);
+            speedX += 1;
+            speedY += 1;
+            pos.y = object.getBottom() + getRADIUS() + 25;
+        } else if (collision.equals(Collision.BOTTOM)) {
+            dirY *= -1;
+            // int newSpeedY = Math.max(-object.getySpeed() / 4 - 10, -40);
+            // setSpeedY(-getSpeedY() - 1);
+            // setSpeedX(getSpeedX() + 1);
+            speedX += 1;
+            speedY += 1;
+            // setSpeedX(getSpeedX() - object.getxSpeed() / 4);
+            pos.y = object.getTop() - getRADIUS() - 25;
+        } else if (collision.equals(Collision.LEFT)) {
+            dirX *= -1;
+            // int newSpeedX = Math.min(-object.getxSpeed() / 4 + 10, 20);
+            // setSpeedX(newSpeedX);
+            // setSpeedY(getSpeedY() - object.getySpeed() / 4);
+            pos.x = object.getRight() + getRADIUS() + 5;
+        } else if (collision.equals(Collision.RIGHT)) {
+            dirX *= -1;
+            // int newSpeedX = Math.max(-object.getxSpeed() / 4 - 10, -20);
+            // setSpeedX(newSpeedX);
+            // setSpeedY(getSpeedY() - object.getySpeed() / 4);
+            pos.x = object.getLeft() - getRADIUS() - 5;
+        }
+
+        System.out.println("x:"+getSpeedX() + ", y:" + getSpeedY());
+    }
+
+    public Collision testCollision(Object object) {
         int distance_from_top = getTop() - object.getBottom();
         int distance_from_bottom = object.getTop() - getBottom();
         int distance_from_left = getLeft() - object.getRight();
         int distance_from_right = object.getLeft() - getRight();
 
         if (distance_from_bottom >= 0 || distance_from_top >= 0 || distance_from_right >= 0 || distance_from_left > 0)
-            return;
+            return null;
 
-        Collision collision = determineCollision(distance_from_top, distance_from_bottom, distance_from_left, distance_from_right);
-
-        if (collision.equals(Collision.TOP)) {
-            int newSpeedY = Math.min(-object.getySpeed() + 10, 40);
-            System.out.println(newSpeedY);
-            setSpeedY(newSpeedY);
-            setSpeedX(getSpeedX() - object.getxSpeed() / 2);
-            pos.y = object.getBottom() + getRADIUS();
-        } else if (collision.equals(Collision.BOTTOM)) {
-            int newSpeedY = Math.max(-object.getySpeed() - 10, -40);
-            System.out.println(newSpeedY);
-            setSpeedY(newSpeedY);
-            setSpeedX(getSpeedX() - object.getxSpeed() / 2);
-            pos.y = object.getTop() - getRADIUS();
-        } else if (collision.equals(Collision.LEFT)) {
-            int newSpeedX = Math.min(-object.getxSpeed() / 2 + 10, 20);
-            System.out.println(newSpeedX);
-            setSpeedX(newSpeedX);
-            setSpeedY(getSpeedY() - object.getySpeed() / 2);
-            pos.x = object.getRight() + getRADIUS();
-        } else if (collision.equals(Collision.RIGHT)) {
-            int newSpeedX = Math.max(-object.getxSpeed() / 2 - 10, -20);
-            setSpeedX(newSpeedX);
-            setSpeedY(getSpeedY() - object.getySpeed() / 2);
-            pos.x = object.getLeft() - getRADIUS();
-        }
-
-        System.out.println("x:"+getSpeedX() + ", y:" + getSpeedY());
-    }
-
-    private Collision determineCollision(int distance_from_top, int distance_from_bottom, int distance_from_left, int distance_from_right) {
         Collision collision = Collision.TOP;
         int min = Math.abs(distance_from_top);
 

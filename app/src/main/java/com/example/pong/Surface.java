@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -36,10 +37,10 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
         SCREEN_HEIGHT = displayMetrics.heightPixels;
         SCREEN_WIDTH = displayMetrics.widthPixels;
 
-        ball = new Ball(25, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+        ball = new Ball(22, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 
-        int paddleWidth = (int)Math.round(SCREEN_WIDTH * 0.4);
-        int paddleHeight = (int)Math.round(SCREEN_HEIGHT * 0.05);
+        int paddleWidth = (int)Math.round(SCREEN_WIDTH * 0.3);
+        int paddleHeight = (int)Math.round(SCREEN_HEIGHT * 0.04);
 
         int playerX = SCREEN_WIDTH / 2;
         int playerY = (int)Math.round(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.2);
@@ -87,7 +88,7 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
         switch(event.getAction()) {
             // case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                player.update((int)event.getX(), (int)event.getY() - 150);
+                player.update((int)event.getX(), (int)event.getY() - 150, SCREEN_WIDTH, SCREEN_HEIGHT);
         }
         return true;
         // return super.onTouchEvent(event);
@@ -95,6 +96,11 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
 
     public void update() {
         ball.updatePos();
+
+        Point pos = getOpponentPos(opponent, ball);
+
+        opponent.update(pos.x, pos.y, SCREEN_WIDTH, SCREEN_HEIGHT);
+
         ball.handleCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         ball.handleCollision(player);
@@ -104,6 +110,22 @@ public class Surface extends SurfaceView implements SurfaceHolder.Callback {
         ball.handleCollision(goalPostB);
         ball.handleCollision(goalPostC);
         ball.handleCollision(goalPostD);
+    }
+
+    public Point getOpponentPos(Object opponent, Ball ball) {
+        Point opponentPos = opponent.getPos();
+        Point ballPos = ball.getPos();
+
+        if (ballPos.y > opponentPos.y && opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.3))
+            opponentPos.y += 5;
+        if (ballPos.y < opponentPos.y)
+            opponentPos.y -= 10;
+        if (ballPos.x > opponentPos.x)
+            opponentPos.x += 20;
+        if (ballPos.x < opponentPos.x)
+            opponentPos.x -= 20;
+
+        return opponentPos;
     }
 
     @Override
