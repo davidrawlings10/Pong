@@ -14,15 +14,16 @@ public class Ball {
     private int dirY;
     private int dirX;
 
-    public Ball(int radius, int x, int y) {
+    public Ball(int radius) {
         RADIUS = radius;
         paint = new Paint();
         paint.setColor(Color.BLACK);
-        pos = new Point(x, y);
+        pos = new Point();
+        /*pos = new Point(x, y);
         speedX = 10;
         speedY = 10;
         dirX = 1;
-        dirY = 1;
+        dirY = 1;*/
     }
 
     public void updatePos() {
@@ -30,7 +31,7 @@ public class Ball {
         pos.y += speedY * dirY;
     }
 
-    private void reset(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+    public void reset(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
         pos.x = SCREEN_WIDTH / 2;
         pos.y = SCREEN_HEIGHT / 2;
         speedX = 10;
@@ -45,7 +46,7 @@ public class Ball {
         }
         if (collision.equals(Collision.TOP) || collision.equals(Collision.BOTTOM)) {
             dirY *= -1;
-            reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+            // reset(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
 
         System.out.println("getSpeedX:" + speedX + ", getSpeedY:" + speedY + ", dirX:" + dirX + ", dirY:" + dirY);

@@ -3,9 +3,14 @@ package com.example.pong;
 import android.graphics.Point;
 
 public class OpponentBrain {
+    private int brain;
     private int responseSpeed;
     private int responseDelay;
     private int timeToResponse;
+
+    public OpponentBrain(int startingBrain) {
+        setBrain(startingBrain);
+    }
 
     public Point getOpponentPos(Object opponent, Ball ball, int SCREEN_HEIGHT) {
         if (timeToResponse > 0) {
@@ -29,8 +34,13 @@ public class OpponentBrain {
     }
 
     public void setBrain(int brain) {
+        this.brain = brain;
         responseSpeed = 10;
         responseDelay = 30;
+    }
+
+    public int getBrain() {
+        return brain;
     }
 
     public void ballCollision() {
