@@ -23,17 +23,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Object goalPostC;
     private Object goalPostD;
     private OpponentBrain opponentBrain;
-    private int brain;
     private int playerScore;
     private int opponentScore;
+    private int screenBlock;
 
     public Game(Context context) {
         super(context);
-
         getHolder().addCallback(this);
+        setFocusable(true);
 
         mainThread = new MainThread(getHolder(), this);
-
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager()
                 .getDefaultDisplay()
@@ -44,36 +43,26 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         ball = new Ball(22);
 
-        int paddleWidth = (int)Math.round(SCREEN_WIDTH * 0.3);
-        int paddleHeight = (int)Math.round(SCREEN_HEIGHT * 0.04);
+        // int paddleWidth = (int)Math.round(SCREEN_WIDTH * 0.3);
+        // int paddleHeight = (int)Math.round(SCREEN_HEIGHT * 0.05);
 
-        int playerX = SCREEN_WIDTH / 2;
-        int playerY = (int)Math.round(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.2);
+        screenBlock = (int)Math.round(SCREEN_HEIGHT * 0.05);
 
-        player = new Object(paddleWidth, paddleHeight, playerX, playerY);
+        player = new Object(screenBlock * 4, screenBlock, SCREEN_WIDTH / 2, SCREEN_HEIGHT - screenBlock * 4);
+        opponent = new Object(screenBlock * 4, screenBlock, SCREEN_WIDTH / 2, screenBlock * 4);
 
-        int opponentX = SCREEN_WIDTH / 2;
-        int opponentY = (int)Math.round(SCREEN_HEIGHT * 0.2);
+        opponentBrain = new OpponentBrain();
 
-        opponent = new Object(paddleWidth, paddleHeight, opponentX, opponentY);
+        goalPostA = new Object(screenBlock * 2, screenBlock, screenBlock, screenBlock / 2);
+        goalPostB = new Object(screenBlock * 2, screenBlock, SCREEN_WIDTH - screenBlock, screenBlock / 2);
+        goalPostC = new Object(screenBlock * 2, screenBlock, screenBlock, SCREEN_HEIGHT - screenBlock * 3);
+        goalPostD = new Object(screenBlock * 2, screenBlock, SCREEN_WIDTH - screenBlock, SCREEN_HEIGHT - screenBlock * 3);
 
-        opponentBrain = new OpponentBrain(50);
-
-        int goalPostWidthHeight = (int)Math.round(SCREEN_HEIGHT * 0.1);
-        goalPostA = new Object(goalPostWidthHeight, goalPostWidthHeight, goalPostWidthHeight / 2, goalPostWidthHeight / 2);
-        goalPostB = new Object(goalPostWidthHeight, goalPostWidthHeight, SCREEN_WIDTH - goalPostWidthHeight / 2, goalPostWidthHeight / 2);
-        goalPostC = new Object(goalPostWidthHeight, goalPostWidthHeight, goalPostWidthHeight / 2, SCREEN_HEIGHT - goalPostWidthHeight / 2);
-        goalPostD = new Object(goalPostWidthHeight, goalPostWidthHeight, SCREEN_WIDTH - goalPostWidthHeight / 2, SCREEN_HEIGHT - goalPostWidthHeight / 2);
-
-        brain = 50;
         gameSetup();
-
-        setFocusable(true);
     }
 
     private void gameSetup() {
-        brain += playerScore - opponentScore;
-        opponentBrain.setBrain(brain);
+        opponentBrain.updateBrain(opponentBrain.getBrain() + playerScore - opponentScore);
         playerScore = 0;
         opponentScore = 0;
         pointSetup();
@@ -108,7 +97,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            player.update(new Point((int)event.getX(), (int)event.getY() - 150), SCREEN_WIDTH, SCREEN_HEIGHT);
+            player.update(new Point((int)event.getX(), (int)event.getY() - 150), SCREEN_WIDTH, SCREEN_HEIGHT, screenBlock);
         }
 
         return true;
@@ -125,7 +114,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         ball.updatePos();
 
-        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT);
+        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT, screenBlock);
 
         Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -201,8 +190,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
-        canvas.drawText (Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 70, 70, paint);
-        canvas.drawText (Integer.toString(playerScore), 40, 70, paint);
-        canvas.drawText (Integer.toString(opponentScore), 40, SCREEN_HEIGHT - 70, paint);
+        canvas.drawText(Integer.toString(opponentBrain.getBrain() + 50), SCREEN_WIDTH - 70, 70, paint);
+        canvas.drawText(Integer.toString(playerScore), 40, 70, paint);
+        canvas.drawText(Integer.toString(opponentScore), 40, SCREEN_HEIGHT - 230, paint);
     }
 }

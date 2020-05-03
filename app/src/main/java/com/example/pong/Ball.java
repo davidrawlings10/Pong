@@ -166,4 +166,20 @@ public class Ball {
     public void setSpeedY(int speedY) {
         this.speedY = speedY;
     }
+
+    public int getDirY() {
+        return dirY;
+    }
+
+    public void setDirY(int dirY) {
+        this.dirY = dirY;
+    }
+
+    public int getDirX() {
+        return dirX;
+    }
+
+    public void setDirX(int dirX) {
+        this.dirX = dirX;
+    }
 }

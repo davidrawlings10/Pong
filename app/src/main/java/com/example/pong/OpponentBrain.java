@@ -8,8 +8,9 @@ public class OpponentBrain {
     private int responseDelay;
     private int timeToResponse;
 
-    public OpponentBrain(int startingBrain) {
-        setBrain(startingBrain);
+    public OpponentBrain() {
+        brain = 0;
+        updateBrain(brain);
     }
 
     public Point getOpponentPos(Object opponent, Ball ball, int SCREEN_HEIGHT) {
@@ -21,22 +22,32 @@ public class OpponentBrain {
         Point opponentPos = opponent.getPos();
         Point ballPos = ball.getPos();
 
-        if (ballPos.y > opponentPos.y && opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.3))
-            opponentPos.y += 5;
-        if (ballPos.y < opponentPos.y)
-            opponentPos.y -= 10;
-        if (ballPos.x > opponentPos.x)
-            opponentPos.x += 20;
-        if (ballPos.x < opponentPos.x)
-            opponentPos.x -= 20;
+        if (ballPos.y > opponentPos.y)
+            if (ball.getDirY() == -1 /*&& opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.5)*/) {
+                opponentPos.y -= responseSpeed;
+            } else {
+                opponentPos.y += responseSpeed;
+            }
+        if (ballPos.y < opponentPos.y /*&& opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.5)*/)
+            opponentPos.y -= responseSpeed * 2;
+        if (ballPos.x > opponentPos.x) {
+            opponentPos.x += responseSpeed * 4;
+            if (opponentPos.x > ballPos.x)
+                opponentPos.x = ballPos.x;
+        }
+        if (ballPos.x < opponentPos.x) {
+            opponentPos.x -= responseSpeed * 4;
+            if (opponentPos.x < ballPos.x)
+                opponentPos.x = ballPos.x;
+        }
 
         return opponentPos;
     }
 
-    public void setBrain(int brain) {
+    public void updateBrain(int brain) {
         this.brain = brain;
-        responseSpeed = 10;
-        responseDelay = 30;
+        responseSpeed = 3 + brain / 3;
+        responseDelay = 20 - brain;
     }
 
     public int getBrain() {
