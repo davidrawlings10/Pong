@@ -25,7 +25,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private OpponentBrain opponentBrain;
     private int playerScore;
     private int opponentScore;
-    private int screenBlock;
+    private int SCREEN_BLOCK;
+    private Stage stage;
+    private int timeToNextStage;
+    private int TIME_BETWEEN_STAGES;
 
     public Game(Context context) {
         super(context);
@@ -43,21 +46,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         ball = new Ball(22);
 
-        // int paddleWidth = (int)Math.round(SCREEN_WIDTH * 0.3);
-        // int paddleHeight = (int)Math.round(SCREEN_HEIGHT * 0.05);
+        SCREEN_BLOCK = (int)Math.round(SCREEN_HEIGHT * 0.05);
 
-        screenBlock = (int)Math.round(SCREEN_HEIGHT * 0.05);
-
-        player = new Object(screenBlock * 4, screenBlock, SCREEN_WIDTH / 2, SCREEN_HEIGHT - screenBlock * 4);
-        opponent = new Object(screenBlock * 4, screenBlock, SCREEN_WIDTH / 2, screenBlock * 4);
+        player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
+        opponent = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_BLOCK * 4);
 
         opponentBrain = new OpponentBrain();
 
-        goalPostA = new Object(screenBlock * 2, screenBlock, screenBlock, screenBlock / 2);
-        goalPostB = new Object(screenBlock * 2, screenBlock, SCREEN_WIDTH - screenBlock, screenBlock / 2);
-        goalPostC = new Object(screenBlock * 2, screenBlock, screenBlock, SCREEN_HEIGHT - screenBlock * 3);
-        goalPostD = new Object(screenBlock * 2, screenBlock, SCREEN_WIDTH - screenBlock, SCREEN_HEIGHT - screenBlock * 3);
+        goalPostA = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2);
+        goalPostB = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2);
+        goalPostC = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3);
+        goalPostD = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3);
 
+        TIME_BETWEEN_STAGES = 100;
+
+        stage = Stage.BEFORE;
+        timeToNextStage = TIME_BETWEEN_STAGES;
         gameSetup();
     }
 
@@ -70,6 +74,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private void pointSetup() {
         ball.reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+        timeToNextStage = TIME_BETWEEN_STAGES;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            player.update(new Point((int)event.getX(), (int)event.getY() - 150), SCREEN_WIDTH, SCREEN_HEIGHT, screenBlock);
+            player.update(new Point((int)event.getX(), (int)event.getY() - 150), SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK);
         }
 
         return true;
@@ -112,9 +117,25 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-        ball.updatePos();
 
-        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT, screenBlock);
+        System.out.println("timeToNextStage:"+timeToNextStage);
+
+        if (stage.equals(Stage.BEFORE) || stage.equals(Stage.AFTER)) {
+            timeToNextStage -= 1;
+            if (timeToNextStage == 0) {
+                if (stage.equals(Stage.BEFORE)) {
+                    stage = Stage.PLAYING;
+                } else if (stage.equals(Stage.AFTER)) {
+                    pointSetup();
+                    stage = Stage.BEFORE;
+                    timeToNextStage = TIME_BETWEEN_STAGES;
+                }
+            }
+        } else {
+            ball.updatePos();
+        }
+
+        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK);
 
         Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -159,14 +180,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         if (collisionWall != null && collisionWall.equals(Collision.TOP)) {
             playerScore += 1;
-            pointSetup();
+            stage = Stage.AFTER;
+            timeToNextStage = TIME_BETWEEN_STAGES;
             if (playerScore == 3) {
                 gameSetup();
             }
         }
         if (collisionWall != null && collisionWall.equals(Collision.BOTTOM)) {
             opponentScore += 1;
-            pointSetup();
+            stage = Stage.AFTER;
+            timeToNextStage = TIME_BETWEEN_STAGES;
             if (opponentScore == 3) {
                 gameSetup();
             }
