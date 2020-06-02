@@ -213,8 +213,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
-        canvas.drawText(Integer.toString(opponentBrain.getBrain() + 50), SCREEN_WIDTH - 70, 70, paint);
-        canvas.drawText(Integer.toString(playerScore), 40, 70, paint);
-        canvas.drawText(Integer.toString(opponentScore), 40, SCREEN_HEIGHT - 230, paint);
+        canvas.drawText(Integer.toString(opponentBrain.getBrain() + 50), SCREEN_WIDTH - 110, 60, paint);
+        canvas.drawText(Integer.toString(opponentScore), 70, 60, paint);
+        canvas.drawText(Integer.toString(playerScore), 70, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
     }
 }
