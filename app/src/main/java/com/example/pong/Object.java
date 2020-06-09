@@ -24,8 +24,8 @@ public class Object {
         paint.setColor(Color.BLACK);
     }
 
-    public void update(Point newPos, int SCREEN_WIDTH, int SCREEN_HEIGHT, int SCREEN_BLOCK) {
-        adjustPosForScreen(newPos, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK);
+    public void update(Point newPos, int SCREEN_BLOCK, int minX, int minY, int maxX, int maxY) {
+        adjustPosForScreen(newPos, SCREEN_BLOCK, minX, minY, maxX, maxY);
 
         xSpeed = pos.x - newPos.x;
         ySpeed = pos.y - newPos.y;
@@ -33,15 +33,15 @@ public class Object {
         pos.set(newPos.x, newPos.y);
     }
 
-    private Point adjustPosForScreen(Point newPos, int SCREEN_WIDTH, int SCREEN_HEIGHT, int SCREEN_BLOCK) {
-        if (newPos.x - getWIDTH() / 2 < 0)
-            newPos.x = getWIDTH() / 2;
-        if (newPos.y - getHEIGHT() / 2 < SCREEN_BLOCK)
-            newPos.y = SCREEN_BLOCK + SCREEN_BLOCK / 2;
-        if (newPos.x + getWIDTH() / 2 > SCREEN_WIDTH)
-            newPos.x = SCREEN_WIDTH - getWIDTH() / 2;
-        if (newPos.y > SCREEN_HEIGHT - SCREEN_BLOCK * 4)
-            newPos.y = SCREEN_HEIGHT - SCREEN_BLOCK * 4;
+    private Point adjustPosForScreen(Point newPos, int SCREEN_BLOCK, int minX, int minY, int maxX, int maxY) {
+        if (newPos.x - getWIDTH() / 2 < minX)
+            newPos.x = minX + getWIDTH() / 2;
+        if (newPos.y - getHEIGHT() / 2 < minY)
+            newPos.y = minY + SCREEN_BLOCK / 2;
+        if (newPos.x + getWIDTH() / 2 > maxX)
+            newPos.x = maxX - getWIDTH() / 2;
+        if (newPos.y > maxY - SCREEN_BLOCK * 4)
+            newPos.y = maxY - SCREEN_BLOCK * 4;
 
         return pos;
     }
