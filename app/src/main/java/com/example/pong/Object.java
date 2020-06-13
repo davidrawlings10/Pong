@@ -40,8 +40,8 @@ public class Object {
             newPos.y = minY + SCREEN_BLOCK / 2;
         if (newPos.x + getWIDTH() / 2 > maxX)
             newPos.x = maxX - getWIDTH() / 2;
-        if (newPos.y > maxY - SCREEN_BLOCK * 4)
-            newPos.y = maxY - SCREEN_BLOCK * 4;
+        if (newPos.y > maxY)
+            newPos.y = maxY;
 
         return pos;
     }

@@ -110,7 +110,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             playerX = touchX;
             playerY = touchY;
 
-            /*if (stage.equals(Stage.PLAYING)) {
+            /*if (stage.equals(Stage.PLAYING)) { `1
                 playerY = touchY;
             } else {
                 if (playerY < SCREEN_HEIGHT / 2) {
@@ -120,8 +120,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }*/
 
-            int minY = stage.equals(Stage.PLAYING) ? SCREEN_BLOCK : SCREEN_HEIGHT / 2;
-            player.update(new Point(playerX, playerY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT);
+            int minY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 : SCREEN_BLOCK;
+            player.update(new Point(playerX, playerY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
         }
 
         return true;
@@ -157,7 +157,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             ball.updatePos();
         }
 
-        int maxY = stage.equals(Stage.PLAYING) ? SCREEN_HEIGHT : SCREEN_HEIGHT / 2;
+        int maxY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 - SCREEN_BLOCK * 3 : SCREEN_HEIGHT;
         opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
 
         Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -236,7 +236,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
-        canvas.drawText(Integer.toString(opponentBrain.getBrain() + 50), SCREEN_WIDTH - 110, 60, paint);
+        canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, 60, paint);
         canvas.drawText(Integer.toString(opponentScore), 70, 60, paint);
         canvas.drawText(Integer.toString(playerScore), 70, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
     }
