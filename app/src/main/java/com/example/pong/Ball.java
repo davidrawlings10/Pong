@@ -77,8 +77,6 @@ public class Ball {
             dirX *= -1;
             pos.x = object.getLeft() - RADIUS - 5;
         }
-
-        // System.out.println("x:" + speedX + ", y:" + speedY); `1
     }
 
     public Collision testCollision(Object object) {

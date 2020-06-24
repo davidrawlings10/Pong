@@ -15,8 +15,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread mainThread;
     private int SCREEN_HEIGHT;
     private int SCREEN_WIDTH;
-    private int playerX;
-    private int playerY;
     private Ball ball;
     private Object player;
     private Object opponent;
@@ -107,11 +105,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             int touchX = (int)event.getX();
             int touchY = (int)event.getY() - 150;
 
-            playerX = touchX;
-            playerY = touchY;
-
             int minY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 + SCREEN_BLOCK : SCREEN_BLOCK;
-            player.update(new Point(playerX, playerY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
+            player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
         }
 
         return true;
@@ -137,12 +132,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         int maxY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 - SCREEN_BLOCK * 3 : SCREEN_HEIGHT;
-        opponent.update(opponentBrain.getOpponentPos(opponent, ball/*, SCREEN_HEIGHT`1*/), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
+        opponent.update(opponentBrain.getOpponentPos(opponent, ball), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
 
         Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         if (collisionWall != null) {
-            ball.handleCollisionWall(/*SCREEN_WIDTH, SCREEN_HEIGHT, `1*/ collisionWall);
+            ball.handleCollisionWall(collisionWall);
         }
 
         Collision collisionPlayer = ball.testCollision(player);

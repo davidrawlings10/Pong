@@ -13,7 +13,7 @@ public class OpponentBrain {
         updateBrain(brain);
     }
 
-    public Point getOpponentPos(Object opponent, Ball ball/*, int SCREEN_HEIGHT`1*/) {
+    public Point getOpponentPos(Object opponent, Ball ball) {
         if (timeToResponse > 0) {
             timeToResponse -= 1;
             return opponent.getPos();
@@ -23,12 +23,12 @@ public class OpponentBrain {
         Point ballPos = ball.getPos();
 
         if (ballPos.y > opponentPos.y)
-            if (ball.getDirY() == -1 /*&& opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.5) `1*/) {
+            if (ball.getDirY() == -1) {
                 opponentPos.y -= responseSpeed;
             } else {
                 opponentPos.y += responseSpeed;
             }
-        if (ballPos.y < opponentPos.y /*&& opponentPos.y < (int)Math.round(SCREEN_HEIGHT * 0.5) `1*/)
+        if (ballPos.y < opponentPos.y)
             opponentPos.y -= responseSpeed * 2;
         if (ballPos.x > opponentPos.x) {
             opponentPos.x += responseSpeed * 4;
