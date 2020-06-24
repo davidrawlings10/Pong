@@ -91,13 +91,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // boolean retry = true;
         while (true) {
             try {
                 mainThread.setRunning(false);
                 mainThread.join();
-            } catch (Exception e) { e.printStackTrace(); }
-            // retry = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -110,35 +110,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             playerX = touchX;
             playerY = touchY;
 
-            /*if (stage.equals(Stage.PLAYING)) { `1
-                playerY = touchY;
-            } else {
-                if (playerY < SCREEN_HEIGHT / 2) {
-                    playerY += 10;
-                } else {
-                    playerY = touchY;
-                }
-            }*/
-
-            int minY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 : SCREEN_BLOCK;
+            int minY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 + SCREEN_BLOCK : SCREEN_BLOCK;
             player.update(new Point(playerX, playerY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
         }
 
         return true;
-
-        /* switch(event.getAction()) { `1
-            // case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-                player.update((int)event.getX(), (int)event.getY() - 150, SCREEN_WIDTH, SCREEN_HEIGHT);
-        }
-        return true;
-        // return super.onTouchEvent(event); */
     }
 
     public void update() {
-
-        System.out.println("timeToNextStage:"+timeToNextStage);
-
         if (stage.equals(Stage.BEFORE) || stage.equals(Stage.AFTER)) {
             timeToNextStage -= 1;
             if (timeToNextStage == 0) {
@@ -158,12 +137,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         int maxY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 - SCREEN_BLOCK * 3 : SCREEN_HEIGHT;
-        opponent.update(opponentBrain.getOpponentPos(opponent, ball, SCREEN_HEIGHT), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
+        opponent.update(opponentBrain.getOpponentPos(opponent, ball/*, SCREEN_HEIGHT`1*/), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
 
         Collision collisionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         if (collisionWall != null) {
-            ball.handleCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT, collisionWall);
+            ball.handleCollisionWall(/*SCREEN_WIDTH, SCREEN_HEIGHT, `1*/ collisionWall);
         }
 
         Collision collisionPlayer = ball.testCollision(player);
@@ -205,17 +184,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             playerScore += 1;
             stage = Stage.AFTER;
             timeToNextStage = TIME_BETWEEN_STAGES;
-            /*if (playerScore == 3) { `1
-                gameSetup();
-            }*/
         }
         if (collisionWall != null && collisionWall.equals(Collision.BOTTOM)) {
             opponentScore += 1;
             stage = Stage.AFTER;
             timeToNextStage = TIME_BETWEEN_STAGES;
-            /*if (opponentScore == 3) { `1
-                gameSetup();
-            }*/
         }
     }
 
@@ -236,8 +209,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
-        canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, 60, paint);
-        canvas.drawText(Integer.toString(opponentScore), 70, 60, paint);
-        canvas.drawText(Integer.toString(playerScore), 70, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
+        canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, paint);
+        canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, paint);
+        canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
     }
 }

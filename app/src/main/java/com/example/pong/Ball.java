@@ -35,7 +35,7 @@ public class Ball {
         dirY = 1;
     }
 
-    public void handleCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT, Collision collision) {
+    public void handleCollisionWall(/*int SCREEN_WIDTH, int SCREEN_HEIGHT, `1*/ Collision collision) {
         if (collision.equals(Collision.LEFT) || collision.equals(Collision.RIGHT)) {
             dirX *= -1;
         }
@@ -43,7 +43,7 @@ public class Ball {
             dirY *= -1;
         }
 
-        System.out.println("getSpeedX:" + speedX + ", getSpeedY:" + speedY + ", dirX:" + dirX + ", dirY:" + dirY);
+        // System.out.println("getSpeedX:" + speedX + ", getSpeedY:" + speedY + ", dirX:" + dirX + ", dirY:" + dirY); `1
     }
 
     public Collision testCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
@@ -78,7 +78,7 @@ public class Ball {
             pos.x = object.getLeft() - RADIUS - 5;
         }
 
-        System.out.println("x:" + speedX + ", y:" + speedY);
+        // System.out.println("x:" + speedX + ", y:" + speedY); `1
     }
 
     public Collision testCollision(Object object) {
