@@ -22,23 +22,28 @@ public class OpponentBrain {
         Point opponentPos = opponent.getPos();
         Point ballPos = ball.getPos();
 
-        if (ballPos.y > opponentPos.y)
+        if (ballPos.y > opponentPos.y) {
             if (ball.getDirY() == -1) {
                 opponentPos.y -= responseSpeed;
             } else {
                 opponentPos.y += responseSpeed;
             }
-        if (ballPos.y < opponentPos.y)
+        }
+        if (ballPos.y < opponentPos.y) {
             opponentPos.y -= responseSpeed * 2;
+        }
+
         if (ballPos.x > opponentPos.x) {
             opponentPos.x += responseSpeed * 4;
-            if (opponentPos.x > ballPos.x)
+            if (opponentPos.x > ballPos.x) {
                 opponentPos.x = ballPos.x;
+            }
         }
         if (ballPos.x < opponentPos.x) {
             opponentPos.x -= responseSpeed * 4;
-            if (opponentPos.x < ballPos.x)
+            if (opponentPos.x < ballPos.x) {
                 opponentPos.x = ballPos.x;
+            }
         }
 
         return opponentPos;

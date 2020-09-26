@@ -1,5 +1,5 @@
 package com.example.pong;
 
 enum Stage {
-    BEFORE, PLAYING, AFTER
+    BEFORE, PLAYING, AFTER, END
 }
