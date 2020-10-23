@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.List;
+
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private MainThread mainThread;
     private int SCREEN_HEIGHT;
@@ -30,6 +32,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int timeToNextStage;
     private int TIME_BETWEEN_STAGES;
     private boolean displayGameStartText;
+    private String opponentSkillText, opponentScoreText, playerScoreText;
 
     public Game(Context context) {
         super(context);
@@ -58,6 +61,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         goalPostB = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2);
         goalPostC = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3);
         goalPostD = new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3);
+
+        opponentSkillText = "Opponent Skill ";
+        opponentScoreText = "Opponent Score ";
+        playerScoreText = "Player Score ";
 
         TIME_BETWEEN_STAGES = 150;
 
@@ -131,9 +138,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     timeToNextStage = TIME_BETWEEN_STAGES;
                 }
             }
-        } else if (stage.equals(Stage.END)) {
+        }/* else if (stage.equals(Stage.END)) {
 
-        } else {
+        }*/ else {
             ball.updatePos();
         }
 
@@ -187,7 +194,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             if (playerScore == 3 || opponentScore == 3) {
                 gameEnd();
             }
-            timeToNextStage = TIME_BETWEEN_STAGES;
+            timeToNextStage = TIME_BETWEEN_STAGES + 50;
         }
         if (collisionWall != null && collisionWall.equals(Collision.BOTTOM)) {
             opponentScore += 1;
@@ -195,12 +202,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             if (playerScore == 3 || opponentScore == 3) {
                 gameEnd();
             }
-            timeToNextStage = TIME_BETWEEN_STAGES;
+            timeToNextStage = TIME_BETWEEN_STAGES + 50;
         }
     }
 
     private void gameEnd() {
-        TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
+        // TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
         displayGameStartText = true;
     }
 
@@ -221,18 +228,28 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
-        canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, paint);
-        canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, paint);
-        canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
+        if (!displayGameStartText) {
+            canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, paint);
+            canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, paint);
+            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
+        }
 
         Paint blackPaint = new Paint();
         blackPaint.setTextSize(50);
         blackPaint.setColor(Color.BLACK);
         blackPaint.setTextAlign(Paint.Align.CENTER);
+
         if (displayGameStartText) {
-            canvas.drawText("Opponent Skill " + opponentBrain.getBrain(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4, blackPaint);
-            canvas.drawText("Opponent Score " + opponentScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - SCREEN_BLOCK, blackPaint);
-            canvas.drawText("Player Score " + playerScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + SCREEN_BLOCK, blackPaint);
+            canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length())) + opponentBrain.getBrain(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4, blackPaint);
+            canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length())) + opponentScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - SCREEN_BLOCK, blackPaint);
+            canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length())) + playerScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + SCREEN_BLOCK, blackPaint);
         }
+    }
+
+    private int displayTextEndIndex(int textLength) {
+        if (stage.equals(Stage.BEFORE))
+            return Math.min(Math.max(timeToNextStage - 50, 0), textLength);
+        else
+            return textLength;
     }
 }
