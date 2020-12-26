@@ -35,51 +35,49 @@ public class Ball {
         dirY = 1;
     }
 
-    public void handleCollisionWall(/*int SCREEN_WIDTH, int SCREEN_HEIGHT, `1*/ Collision collision) {
-        if (collision.equals(Collision.LEFT) || collision.equals(Collision.RIGHT)) {
+    public void handleCollisionWall(CollisionDirection collisionDirection) {
+        if (collisionDirection.equals(CollisionDirection.LEFT) || collisionDirection.equals(CollisionDirection.RIGHT)) {
             dirX *= -1;
         }
-        if (collision.equals(Collision.TOP) || collision.equals(Collision.BOTTOM)) {
+        if (collisionDirection.equals(CollisionDirection.TOP) || collisionDirection.equals(CollisionDirection.BOTTOM)) {
             dirY *= -1;
         }
-
-        // System.out.println("getSpeedX:" + speedX + ", getSpeedY:" + speedY + ", dirX:" + dirX + ", dirY:" + dirY); `1
     }
 
-    public Collision testCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
+    public CollisionDirection testCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
         if (getTop() < 0 && dirY < 0)
-            return Collision.TOP;
+            return CollisionDirection.TOP;
         if (getBottom() > SCREEN_HEIGHT && dirY > 0)
-            return Collision.BOTTOM;
+            return CollisionDirection.BOTTOM;
         if (getLeft() < 0 && dirX < 0)
-            return Collision.LEFT;
+            return CollisionDirection.LEFT;
         if (getRight() > SCREEN_WIDTH && dirX > 0)
-            return Collision.RIGHT;
+            return CollisionDirection.RIGHT;
 
         return null;
     }
 
-    public void handleCollision(Object object, Collision collision) {
-        if (collision.equals(Collision.TOP)) {
+    public void handleCollision(Object object, CollisionDirection collisionDirection) {
+        if (collisionDirection.equals(CollisionDirection.TOP)) {
             dirY *= -1;
             speedX += 1;
             speedY += 1;
             pos.y = object.getBottom() + RADIUS + 25;
-        } else if (collision.equals(Collision.BOTTOM)) {
+        } else if (collisionDirection.equals(CollisionDirection.BOTTOM)) {
             dirY *= -1;
             speedX += 1;
             speedY += 1;
             pos.y = object.getTop() - RADIUS - 25;
-        } else if (collision.equals(Collision.LEFT)) {
+        } else if (collisionDirection.equals(CollisionDirection.LEFT)) {
             dirX *= -1;
             pos.x = object.getRight() + RADIUS + 5;
-        } else if (collision.equals(Collision.RIGHT)) {
+        } else if (collisionDirection.equals(CollisionDirection.RIGHT)) {
             dirX *= -1;
             pos.x = object.getLeft() - RADIUS - 5;
         }
     }
 
-    public Collision testCollision(Object object) {
+    public CollisionDirection testCollision(Object object) {
         int distance_from_top = getTop() - object.getBottom();
         int distance_from_bottom = object.getTop() - getBottom();
         int distance_from_left = getLeft() - object.getRight();
@@ -88,25 +86,25 @@ public class Ball {
         if (distance_from_bottom >= 0 || distance_from_top >= 0 || distance_from_right >= 0 || distance_from_left > 0)
             return null;
 
-        Collision collision = Collision.TOP;
+        CollisionDirection collisionDirection = CollisionDirection.TOP;
         int min = Math.abs(distance_from_top);
 
         if (Math.abs(distance_from_bottom) < min) {
-            collision = Collision.BOTTOM;
+            collisionDirection = CollisionDirection.BOTTOM;
             min = Math.abs(distance_from_bottom);
         }
 
         if (Math.abs(distance_from_left) < min) {
-            collision = Collision.LEFT;
+            collisionDirection = CollisionDirection.LEFT;
             min = Math.abs(distance_from_left);
         }
 
         if (Math.abs(distance_from_right) < min) {
-            collision = Collision.RIGHT;
+            collisionDirection = CollisionDirection.RIGHT;
             min = Math.abs(distance_from_right);
         }
 
-        return collision;
+        return collisionDirection;
     }
 
     public void draw(Canvas canvas) {
