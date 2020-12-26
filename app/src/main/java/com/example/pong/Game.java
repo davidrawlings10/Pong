@@ -32,15 +32,35 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int playerScore;
     private int opponentScore;
 
-    private Stage stage;
+    private PointStage pointStage;
 
     private int timeToNextStage;
     private int TIME_BETWEEN_STAGES;
     private boolean displayGameStartText;
     private String opponentSkillText, opponentScoreText, playerScoreText;
 
+    // INITIALIZE ----------------------------------------------------------------------------------
     public Game(Context context) {
         super(context);
+
+        initializeCoreProperties();
+
+        initializeObjects();
+
+        opponentBrain = new OpponentBrain();
+
+        initializeText();
+
+        TIME_BETWEEN_STAGES = 150;
+
+        displayGameStartText = true;
+
+        pointStage = PointStage.BEFORE;
+        timeToNextStage = TIME_BETWEEN_STAGES;
+        gameSetup();
+    }
+
+    private void initializeCoreProperties() {
         getHolder().addCallback(this);
         setFocusable(true);
 
@@ -53,7 +73,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         SCREEN_HEIGHT = displayMetrics.heightPixels;
         SCREEN_WIDTH = displayMetrics.widthPixels;
         SCREEN_BLOCK = (int)Math.round(SCREEN_HEIGHT * 0.05);
+    }
 
+    private void initializeObjects() {
         ball = new Ball(22);
         player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
         opponent = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_BLOCK * 4);
@@ -62,22 +84,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2));
         goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3));
         goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3));
+    }
 
-        opponentBrain = new OpponentBrain();
-
+    private void initializeText() {
         opponentSkillText = "Opponent Skill ";
         opponentScoreText = "Opponent Score ";
         playerScoreText = "Player Score ";
-
-        TIME_BETWEEN_STAGES = 250;
-
-        displayGameStartText = true;
-
-        stage = Stage.BEFORE;
-        timeToNextStage = TIME_BETWEEN_STAGES;
-        gameSetup();
     }
 
+    // SETUP ---------------------------------------------------------------------------------------
     private void gameSetup() {
         opponentBrain.updateBrain(opponentBrain.getBrain() + playerScore - opponentScore);
         playerScore = 0;
@@ -90,6 +105,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         timeToNextStage = TIME_BETWEEN_STAGES;
     }
 
+    // EVENTS --------------------------------------------------------------------------------------
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
@@ -118,36 +134,47 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             int touchX = (int)event.getX();
             int touchY = (int)event.getY() - 150;
 
-            int minY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 + SCREEN_BLOCK : SCREEN_BLOCK;
+            int minY = pointStage.equals(PointStage.BEFORE) ? SCREEN_HEIGHT / 2 + SCREEN_BLOCK : SCREEN_BLOCK;
             player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
         }
 
         return true;
     }
 
+    // UPDATE --------------------------------------------------------------------------------------
     public void update() {
-        if (stage.equals(Stage.BEFORE) || stage.equals(Stage.AFTER)) {
+        handleGameFlow();
+        updateOpponent();
+        handleCollision();
+    }
+
+    private void handleGameFlow() {
+        if (pointStage.equals(PointStage.BEFORE) || pointStage.equals(PointStage.AFTER)) {
             timeToNextStage -= 1;
             if (timeToNextStage == 0) {
-                if (stage.equals(Stage.BEFORE)) {
+                if (pointStage.equals(PointStage.BEFORE)) {
                     displayGameStartText = false;
-                    stage = Stage.PLAYING;
-                } else if (stage.equals(Stage.AFTER)) {
+                    pointStage = PointStage.PLAYING;
+                } else if (pointStage.equals(PointStage.AFTER)) {
                     pointSetup();
                     if (playerScore == 3 || opponentScore == 3) {
                         gameSetup();
                     }
-                    stage = Stage.BEFORE;
+                    pointStage = PointStage.BEFORE;
                     timeToNextStage = TIME_BETWEEN_STAGES;
                 }
             }
         } else {
             ball.updatePos();
         }
+    }
 
-        int maxY = stage.equals(Stage.BEFORE) ? SCREEN_HEIGHT / 2 - SCREEN_BLOCK * 3 : SCREEN_HEIGHT;
+    private void updateOpponent() {
+        int maxY = pointStage.equals(PointStage.BEFORE) ? SCREEN_HEIGHT / 2 - SCREEN_BLOCK * 3 : SCREEN_HEIGHT;
         opponent.update(opponentBrain.getOpponentPos(opponent, ball), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
+    }
 
+    private void handleCollision() {
         boolean ballCollision = false;
 
         CollisionDirection collisionDirectionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -183,40 +210,46 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         if (collisionDirectionWall != null && collisionDirectionWall.equals(CollisionDirection.TOP)) {
             playerScore += 1;
-            stage = Stage.AFTER;
-            if (playerScore == 3 || opponentScore == 3) {
-                gameEnd();
-            }
-            timeToNextStage = TIME_BETWEEN_STAGES + 50;
+            handleGoalCollision();
         }
         if (collisionDirectionWall != null && collisionDirectionWall.equals(CollisionDirection.BOTTOM)) {
             opponentScore += 1;
-            stage = Stage.AFTER;
-            if (playerScore == 3 || opponentScore == 3) {
-                gameEnd();
-            }
-            timeToNextStage = TIME_BETWEEN_STAGES + 50;
+            handleGoalCollision();
         }
     }
 
+    private void handleGoalCollision() {
+        pointStage = PointStage.AFTER;
+        if (playerScore == 3 || opponentScore == 3) {
+            gameEnd();
+        }
+        timeToNextStage = TIME_BETWEEN_STAGES + 50;
+    }
+
     private void gameEnd() {
-        // TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
+        TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
         displayGameStartText = true;
     }
 
+    // DRAW ----------------------------------------------------------------------------------------
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-
         canvas.drawColor(Color.WHITE);
+        drawObjects(canvas);
+        drawText(canvas);
+    }
 
+    private void drawObjects(Canvas canvas) {
         ball.draw(canvas);
         player.draw(canvas);
         opponent.draw(canvas);
         for (Object goalPost : goalPosts) {
             goalPost.draw(canvas);
         }
+    }
 
+    private void drawText(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
@@ -238,9 +271,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private int displayTextEndIndex(int textLength) {
-        if (stage.equals(Stage.BEFORE)) {
+        if (pointStage.equals(PointStage.BEFORE)) {
             return Math.min(Math.max(timeToNextStage - 75, 0), textLength);
-        } else if (stage.equals(Stage.AFTER)) {
+        } else if (pointStage.equals(PointStage.AFTER)) {
             return Math.min(Math.max(TIME_BETWEEN_STAGES - timeToNextStage, 0), textLength);
         } else {
             return textLength;
