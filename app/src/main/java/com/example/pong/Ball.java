@@ -45,16 +45,23 @@ public class Ball {
     }
 
     public CollisionDirection testCollisionWall(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-        if (getTop() < 0 && dirY < 0)
-            return CollisionDirection.TOP;
-        if (getBottom() > SCREEN_HEIGHT && dirY > 0)
-            return CollisionDirection.BOTTOM;
-        if (getLeft() < 0 && dirX < 0)
-            return CollisionDirection.LEFT;
-        if (getRight() > SCREEN_WIDTH && dirX > 0)
-            return CollisionDirection.RIGHT;
+        CollisionDirection collisionDirection = null;
 
-        return null;
+        if (getTop() < 0 && dirY < 0) {
+            collisionDirection = CollisionDirection.TOP;
+        } else if (getBottom() > SCREEN_HEIGHT && dirY > 0) {
+            collisionDirection = CollisionDirection.BOTTOM;
+        } else if (getLeft() < 0 && dirX < 0) {
+            collisionDirection = CollisionDirection.LEFT;
+        } else if (getRight() > SCREEN_WIDTH && dirX > 0) {
+            collisionDirection = CollisionDirection.RIGHT;
+        }
+
+        if (collisionDirection != null) {
+            handleCollisionWall(collisionDirection);
+        }
+
+        return collisionDirection;
     }
 
     public void handleCollision(Object object, CollisionDirection collisionDirection) {
@@ -103,6 +110,8 @@ public class Ball {
             collisionDirection = CollisionDirection.RIGHT;
             min = Math.abs(distance_from_right);
         }
+
+        handleCollision(object, collisionDirection);
 
         return collisionDirection;
     }

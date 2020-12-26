@@ -145,7 +145,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
         handleGameFlow();
         updateOpponent();
-        handleCollision();
+        handleBallCollision();
     }
 
     private void handleGameFlow() {
@@ -174,51 +174,32 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         opponent.update(opponentBrain.getOpponentPos(opponent, ball), SCREEN_BLOCK, 0, SCREEN_BLOCK, SCREEN_WIDTH, maxY);
     }
 
-    private void handleCollision() {
-        boolean ballCollision = false;
-
+    private void handleBallCollision() {
         CollisionDirection collisionDirectionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-        if (collisionDirectionWall != null) {
-            ball.handleCollisionWall(collisionDirectionWall);
-            ballCollision = true;
-        }
-
         CollisionDirection collisionDirectionPlayer = ball.testCollision(player);
-        if (collisionDirectionPlayer != null) {
-            ball.handleCollision(player, collisionDirectionPlayer);
-            ballCollision = true;
-        }
-
         CollisionDirection collisionDirectionOpponent = ball.testCollision(opponent);
-        if (collisionDirectionOpponent != null) {
-            ball.handleCollision(opponent, collisionDirectionOpponent);
-            ballCollision = true;
+        if (collisionDirectionWall != null || collisionDirectionPlayer != null || collisionDirectionOpponent != null) {
+            opponentBrain.ballCollision();
         }
 
         for (Object goalPost : goalPosts) {
             CollisionDirection collisionDirectionGoalPost = ball.testCollision(goalPost);
             if (collisionDirectionGoalPost != null) {
-                ball.handleCollision(goalPost, collisionDirectionGoalPost);
-                ballCollision = true;
+                opponentBrain.ballCollision();
             }
-        }
-
-        if (ballCollision) {
-            opponentBrain.ballCollision();
         }
 
         if (collisionDirectionWall != null && collisionDirectionWall.equals(CollisionDirection.TOP)) {
             playerScore += 1;
-            handleGoalCollision();
+            handleGoal();
         }
         if (collisionDirectionWall != null && collisionDirectionWall.equals(CollisionDirection.BOTTOM)) {
             opponentScore += 1;
-            handleGoalCollision();
+            handleGoal();
         }
     }
 
-    private void handleGoalCollision() {
+    private void handleGoal() {
         pointStage = PointStage.AFTER;
         if (playerScore == 3 || opponentScore == 3) {
             gameEnd();
