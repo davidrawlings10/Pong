@@ -4,7 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-// :/yes!
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 public class Ball {
     final private int RADIUS;
     private Point pos;
@@ -26,11 +29,11 @@ public class Ball {
         pos.y += speedY * dirY;
     }
 
-    public void reset(int SCREEN_WIDTH, int SCREEN_HEIGHT) {
-        pos.x = SCREEN_WIDTH / 2;
-        pos.y = SCREEN_HEIGHT / 2;
-        speedX = 10;
-        speedY = 10;
+    public void reset(int fieldCenterX, int fieldCenterY) {
+        pos.x = fieldCenterX;
+        pos.y = fieldCenterY;
+        speedX = 7;
+        speedY = 7;
         dirX = 1;
         dirY = 1;
     }
@@ -116,8 +119,14 @@ public class Ball {
         return collisionDirection;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void draw(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
         canvas.drawCircle(pos.x, pos.y, RADIUS, paint);
+
+        // paint.setColor(Color.BLACK);
+        // canvas.drawOval(pos.x - 16, pos.y - 16, pos.x + 10, pos.y + 10, paint);
     }
 
     public void setPos(Point pos) {

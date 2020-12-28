@@ -6,10 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,19 +80,32 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private void initializeObjects() {
         ball = new Ball(22);
-        player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
+        player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, getFieldBottomY() - SCREEN_BLOCK - SCREEN_BLOCK / 2);
         opponent = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_BLOCK * 4);
         goalPosts = new ArrayList<>();
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2));
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2));
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3));
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_HEIGHT - SCREEN_BLOCK * 3));
+        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top left
+        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top right
+        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom left
+        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom right
     }
 
     private void initializeText() {
         opponentSkillText = "Opponent Skill ";
         opponentScoreText = "Opponent Score ";
         playerScoreText = "Player Score ";
+    }
+
+    // DIMENSION HELPERS ---------------------------------------------------------------------------
+    private int getFieldCenterX() {
+        return SCREEN_WIDTH / 2;
+    }
+
+    private int getFieldBottomY() {
+        return (SCREEN_HEIGHT - SCREEN_BLOCK * 3) /*- SCREEN_BLOCK / 2*/;
+    }
+
+    private int getFieldCenterY() {
+        return getFieldBottomY() / 2;
     }
 
     // SETUP ---------------------------------------------------------------------------------------
@@ -101,7 +117,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void pointSetup() {
-        ball.reset(SCREEN_WIDTH, SCREEN_HEIGHT);
+        ball.reset(getFieldCenterX(), getFieldCenterY());
         timeToNextStage = TIME_BETWEEN_STAGES;
     }
 
@@ -132,10 +148,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             int touchX = (int)event.getX();
-            int touchY = (int)event.getY() - 150;
+            int touchY = (int)event.getY() - SCREEN_BLOCK * 2;
 
-            int minY = pointStage.equals(PointStage.BEFORE) ? SCREEN_HEIGHT / 2 + SCREEN_BLOCK : SCREEN_BLOCK;
-            player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, SCREEN_HEIGHT - SCREEN_BLOCK * 4);
+            int minY = pointStage.equals(PointStage.BEFORE) ? getFieldCenterY() + SCREEN_BLOCK : SCREEN_BLOCK;
+            player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, getFieldBottomY() - SCREEN_BLOCK - SCREEN_BLOCK / 2);
         }
 
         return true;
@@ -213,20 +229,101 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     // DRAW ----------------------------------------------------------------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        canvas.drawColor(Color.WHITE);
+        drawBackground(canvas);
         drawObjects(canvas);
         drawText(canvas);
+
+        // drawScreenBlockGrid(canvas);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void drawBackground(Canvas canvas) {
+        canvas.drawColor(Color.rgb(0,175,0));
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+
+        Paint greenPaint = new Paint();
+        greenPaint.setColor(Color.rgb(0,175,0));
+
+        int LINE_WIDTH = 4;
+
+        // center circle
+        canvas.drawCircle(getFieldCenterX(), getFieldCenterY(), 130, paint);
+        canvas.drawCircle(getFieldCenterX(), getFieldCenterY(), 130 - LINE_WIDTH, greenPaint);
+
+        // midline
+        canvas.drawRect(0, getFieldCenterY() - LINE_WIDTH / 2, SCREEN_WIDTH, getFieldCenterY() + LINE_WIDTH / 2, paint);
+
+        // top goal box circle
+        canvas.drawOval(getFieldCenterX() - SCREEN_BLOCK - LINE_WIDTH, SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2 - LINE_WIDTH, getFieldCenterX() + SCREEN_BLOCK + 4, SCREEN_BLOCK * 4 + SCREEN_BLOCK / 2 + LINE_WIDTH, paint);
+        canvas.drawOval(getFieldCenterX() - SCREEN_BLOCK, SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2, getFieldCenterX() + SCREEN_BLOCK, SCREEN_BLOCK * 4 + SCREEN_BLOCK / 2, greenPaint);
+
+        // bottom goal box circles
+        canvas.drawOval(getFieldCenterX() - SCREEN_BLOCK - LINE_WIDTH, getFieldBottomY() - SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2 - LINE_WIDTH, getFieldCenterX() + SCREEN_BLOCK + LINE_WIDTH, getFieldBottomY() - SCREEN_BLOCK * 3 + SCREEN_BLOCK / 2 + LINE_WIDTH, paint);
+        canvas.drawOval(getFieldCenterX() - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2, getFieldCenterX() + SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK * 3 + SCREEN_BLOCK / 2, greenPaint);
+
+        // top goal box
+        canvas.drawRect(SCREEN_BLOCK - LINE_WIDTH, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK + LINE_WIDTH, SCREEN_BLOCK * 4 + LINE_WIDTH, paint);
+        canvas.drawRect(SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK * 4, greenPaint);
+
+        // bottom goal box
+        canvas.drawRect(SCREEN_BLOCK - LINE_WIDTH, getFieldBottomY() - SCREEN_BLOCK * 4 - LINE_WIDTH, SCREEN_WIDTH - SCREEN_BLOCK + LINE_WIDTH, getFieldBottomY() - SCREEN_BLOCK, paint);
+        canvas.drawRect(SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK * 4, SCREEN_WIDTH - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK, greenPaint);
+
+        // corner circles
+        canvas.drawCircle(0, SCREEN_BLOCK, 30, paint);
+        canvas.drawCircle(0, SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+
+        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, 30, paint);
+        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+
+        canvas.drawCircle(0, getFieldBottomY() - SCREEN_BLOCK, 30, paint);
+        canvas.drawCircle(0, getFieldBottomY() - SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+
+        canvas.drawCircle(SCREEN_WIDTH, getFieldBottomY() - SCREEN_BLOCK, 30, paint);
+        canvas.drawCircle(SCREEN_WIDTH, getFieldBottomY() - SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+
+        // goal lines
+        canvas.drawRect(0, SCREEN_BLOCK, SCREEN_WIDTH, SCREEN_BLOCK + LINE_WIDTH, paint); // top goal line
+        canvas.drawRect(0, getFieldBottomY() - SCREEN_BLOCK - LINE_WIDTH, SCREEN_WIDTH, getFieldBottomY() - SCREEN_BLOCK, paint); // bottom goal line
+
+        // net lines
+        canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_BLOCK * 2 + LINE_WIDTH, SCREEN_BLOCK, paint);
+        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2 - 4, SCREEN_BLOCK, paint);
+        canvas.drawRect(SCREEN_BLOCK * 2, getFieldBottomY() - SCREEN_BLOCK, SCREEN_BLOCK * 2 + 4, getFieldBottomY(), paint);
+        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, getFieldBottomY() - SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK * 2 - 4, getFieldBottomY(), paint);
+        canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2, LINE_WIDTH, paint);
+        canvas.drawRect(SCREEN_BLOCK * 2, getFieldBottomY(), SCREEN_WIDTH - SCREEN_BLOCK * 2, getFieldBottomY() - LINE_WIDTH, paint);
+
+        // nets
+        for (int i = 0; i < 100; ++i) {
+            canvas.drawLine(SCREEN_BLOCK + 15 * i, 0, SCREEN_BLOCK + SCREEN_BLOCK + 15 * i, SCREEN_BLOCK, paint);
+            canvas.drawLine(SCREEN_BLOCK + SCREEN_BLOCK + 15 * i, 0, SCREEN_BLOCK  + 15 * i, SCREEN_BLOCK, paint);
+        }
+
+        for (int i = 0; i < 100; ++i) {
+            canvas.drawLine(SCREEN_BLOCK + 15 * i, getFieldBottomY(), SCREEN_BLOCK + SCREEN_BLOCK + 15 * i, getFieldBottomY() - SCREEN_BLOCK, paint);
+            canvas.drawLine(SCREEN_BLOCK + SCREEN_BLOCK + 15 * i, getFieldBottomY(), SCREEN_BLOCK  + 15 * i, getFieldBottomY() - SCREEN_BLOCK, paint);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void drawObjects(Canvas canvas) {
+        Paint blackPaint = new Paint();
+        blackPaint.setColor(Color.BLACK);
+
+        Paint greenPaint = new Paint();
+        greenPaint.setColor(Color.rgb(0,175,0));
+
         ball.draw(canvas);
-        player.draw(canvas);
-        opponent.draw(canvas);
+        player.draw(canvas, blackPaint);
+        opponent.draw(canvas, blackPaint);
         for (Object goalPost : goalPosts) {
-            goalPost.draw(canvas);
+            goalPost.draw(canvas, greenPaint);
         }
     }
 
@@ -237,17 +334,30 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         Paint blackPaint = new Paint();
         blackPaint.setTextSize(50);
-        blackPaint.setColor(Color.BLACK);
+        blackPaint.setColor(Color.WHITE);
         blackPaint.setTextAlign(Paint.Align.CENTER);
 
         if (displayGameStartText) {
-            canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length())) + opponentBrain.getBrain(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4, blackPaint);
-            canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length())) + opponentScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - SCREEN_BLOCK, blackPaint);
-            canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length())) + playerScore, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + SCREEN_BLOCK, blackPaint);
+            canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length())) + opponentBrain.getBrain(), getFieldCenterX(), getFieldCenterY() - SCREEN_BLOCK * 3, blackPaint);
+            canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length())) + opponentScore, getFieldCenterX(), getFieldCenterY() - SCREEN_BLOCK * 2 + 15, blackPaint);
+            canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length())) + playerScore, getFieldCenterX(), getFieldCenterY() + SCREEN_BLOCK * 2 + 15, blackPaint);
         } else {
             canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, paint);
             canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, paint);
-            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, SCREEN_HEIGHT - SCREEN_BLOCK * 3 + 10, paint);
+            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, getFieldBottomY() - SCREEN_BLOCK + SCREEN_BLOCK / 2 + 10, paint);
+        }
+    }
+
+    private void drawScreenBlockGrid(Canvas canvas) {
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+
+        for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH; i += SCREEN_BLOCK) {
+            canvas.drawLine(i, 0, i, SCREEN_HEIGHT, paint);
+        }
+
+        for (int i = SCREEN_BLOCK; i < SCREEN_HEIGHT; i += SCREEN_BLOCK) {
+            canvas.drawLine(0, i, SCREEN_WIDTH, i, paint);
         }
     }
 

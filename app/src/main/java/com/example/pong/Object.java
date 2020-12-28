@@ -11,7 +11,8 @@ public class Object {
     final private int HEIGHT;
     private Point pos;
     private Rect rect;
-    private Paint paint;
+    /*private Paint paint;
+    private Paint whitePaint;*/
     private int xSpeed;
     private int ySpeed;
 
@@ -20,8 +21,6 @@ public class Object {
         HEIGHT = height;
         pos = new Point(x, y);
         rect = new Rect();
-        paint = new Paint();
-        paint.setColor(Color.BLACK);
     }
 
     public void update(Point newPos, int SCREEN_BLOCK, int minX, int minY, int maxX, int maxY) {
@@ -46,7 +45,7 @@ public class Object {
         return pos;
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas, Paint paint) {
         rect.set(pos.x - WIDTH/2, pos.y - HEIGHT/2, pos.x + WIDTH/2, pos.y + HEIGHT/2);
         canvas.drawRect(rect, paint);
     }
