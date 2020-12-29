@@ -20,7 +20,7 @@ public class Ball {
     public Ball(int radius) {
         RADIUS = radius;
         paint = new Paint();
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.WHITE);
         pos = new Point();
     }
 
@@ -32,8 +32,8 @@ public class Ball {
     public void reset(int fieldCenterX, int fieldCenterY) {
         pos.x = fieldCenterX;
         pos.y = fieldCenterY;
-        speedX = 7;
-        speedY = 7;
+        speedX = 6;
+        speedY = 6;
         dirX = 1;
         dirY = 1;
     }
@@ -122,7 +122,7 @@ public class Ball {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
+        paint.setColor(Color.BLACK);
         canvas.drawCircle(pos.x, pos.y, RADIUS, paint);
 
         // paint.setColor(Color.BLACK);

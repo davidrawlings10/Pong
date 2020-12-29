@@ -11,7 +11,7 @@ public class Object {
     final private int HEIGHT;
     private Point pos;
     private Rect rect;
-    /*private Paint paint;
+    /*private Paint paint; `1
     private Paint whitePaint;*/
     private int xSpeed;
     private int ySpeed;
