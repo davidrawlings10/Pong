@@ -26,6 +26,8 @@ public class Drawer {
         this.FIELD_BOTTOM_Y = FIELD_BOTTOM_Y;
         this.TIME_BETWEEN_STAGES = TIME_BETWEEN_STAGES;
 
+        this.displayGameStartText = true;
+
         initializePaintColors();
         initializeNetLines();
     }
@@ -46,7 +48,7 @@ public class Drawer {
 
     public void initializeNetLines() {
         netLines = new ArrayList<>();
-        for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH - SCREEN_BLOCK * 2; i += 25) {
+        for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH - SCREEN_BLOCK * 2; i += SCREEN_BLOCK / 4) {
             netLines.add(new ArrayList<>(Arrays.asList((float)i, (float)0, (float)SCREEN_BLOCK + i, (float)SCREEN_BLOCK)));
             netLines.add(new ArrayList<>(Arrays.asList((float)SCREEN_BLOCK + i, (float)0, (float)i, (float)SCREEN_BLOCK)));
             netLines.add(new ArrayList<>(Arrays.asList((float)i, (float)FIELD_BOTTOM_Y, (float)SCREEN_BLOCK + i, (float)FIELD_BOTTOM_Y - SCREEN_BLOCK)));
@@ -63,11 +65,11 @@ public class Drawer {
             canvas.drawRect(0, SCREEN_BLOCK * 3 * i - SCREEN_BLOCK * 2, SCREEN_WIDTH, SCREEN_BLOCK * 3 * i + SCREEN_BLOCK * 3 - SCREEN_BLOCK * 2, (i % 2 == 0 ? greenPaint : darkGreenPaint));
         }*/
 
-        final int LINE_WIDTH = 4;
+        final int LINE_WIDTH = SCREEN_BLOCK / 24;
 
         // center circle
-        canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, 130, whitePaint);
-        canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, 130 - LINE_WIDTH, darkGreenPaint);
+        canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, SCREEN_BLOCK * 4/3, whitePaint);
+        canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, SCREEN_BLOCK * 4/3 - LINE_WIDTH, darkGreenPaint);
 
         // midline
         canvas.drawRect(0, FIELD_CENTER_Y - LINE_WIDTH / 2, SCREEN_WIDTH, FIELD_CENTER_Y + LINE_WIDTH / 2, whitePaint);
@@ -89,17 +91,17 @@ public class Drawer {
         canvas.drawRect(SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 4, SCREEN_WIDTH - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK, darkGreenPaint);
 
         // corner circles
-        canvas.drawCircle(0, SCREEN_BLOCK, 30, whitePaint);
-        canvas.drawCircle(0, SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+        canvas.drawCircle(0, SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint);
+        canvas.drawCircle(0, SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint);
 
-        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, 30, whitePaint);
-        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint);
+        canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint);
 
-        canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, 30, whitePaint);
-        canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+        canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint);
+        canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint);
 
-        canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, 30, whitePaint);
-        canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, 30 - LINE_WIDTH, greenPaint);
+        canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint);
+        canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint);
 
         // goal lines
         canvas.drawRect(0, SCREEN_BLOCK, SCREEN_WIDTH, SCREEN_BLOCK + LINE_WIDTH, whitePaint); // top goal line
@@ -111,9 +113,9 @@ public class Drawer {
 
         // net border
         canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_BLOCK * 2 + LINE_WIDTH, SCREEN_BLOCK, whitePaint);
-        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2 - 4, SCREEN_BLOCK, whitePaint);
-        canvas.drawRect(SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK * 2 + 4, FIELD_BOTTOM_Y, whitePaint);
-        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK * 2 - 4, FIELD_BOTTOM_Y, whitePaint);
+        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2 - LINE_WIDTH, SCREEN_BLOCK, whitePaint);
+        canvas.drawRect(SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK * 2 + LINE_WIDTH, FIELD_BOTTOM_Y, whitePaint);
+        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK * 2 - LINE_WIDTH, FIELD_BOTTOM_Y, whitePaint);
         canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2, LINE_WIDTH, whitePaint);
         canvas.drawRect(SCREEN_BLOCK * 2, FIELD_BOTTOM_Y, SCREEN_WIDTH - SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - LINE_WIDTH, whitePaint);
     }
@@ -129,26 +131,26 @@ public class Drawer {
     }
 
     public void drawText(Canvas canvas, OpponentBrain opponentBrain, int playerScore, int opponentScore, PointStage pointStage, int timeToNextStage) {
-        Paint scorePaint = new Paint();
-        scorePaint.setColor(Color.WHITE);
-        scorePaint.setTextSize(40);
+        Paint scoreTextPaint = new Paint();
+        scoreTextPaint.setColor(Color.WHITE);
+        scoreTextPaint.setTextSize(SCREEN_BLOCK / 2);
 
-        Paint gameStartPaint = new Paint();
-        gameStartPaint.setTextSize(50);
-        gameStartPaint.setColor(Color.WHITE);
-        gameStartPaint.setTextAlign(Paint.Align.CENTER);
+        Paint gameStartTextPaint = new Paint();
+        gameStartTextPaint.setTextSize(SCREEN_BLOCK / 2);
+        gameStartTextPaint.setColor(Color.WHITE);
+        gameStartTextPaint.setTextAlign(Paint.Align.CENTER);
 
         if (displayGameStartText) {
             String opponentSkillText = "Opponent Skill ";
             String opponentScoreText = "Opponent Score ";
             String playerScoreText = "Player Score ";
-            canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length(), pointStage, timeToNextStage)) + opponentBrain.getBrain(), FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 3, gameStartPaint);
-            canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length(), pointStage, timeToNextStage)) + opponentScore, FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 2 + 15, gameStartPaint);
-            canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length(), pointStage, timeToNextStage)) + playerScore, FIELD_CENTER_X, FIELD_CENTER_Y + SCREEN_BLOCK * 2 + 15, gameStartPaint);
+            canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length(), pointStage, timeToNextStage)) + opponentBrain.getBrain(), FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 3, gameStartTextPaint);
+            canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length(), pointStage, timeToNextStage)) + opponentScore, FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 2 + 15, gameStartTextPaint);
+            canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length(), pointStage, timeToNextStage)) + playerScore, FIELD_CENTER_X, FIELD_CENTER_Y + SCREEN_BLOCK * 2 + 15, gameStartTextPaint);
         } else {
-            canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, scorePaint);
-            canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, scorePaint);
-            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 2 + 10, scorePaint);
+            canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, scoreTextPaint);
+            canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, scoreTextPaint);
+            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 2 + 10, scoreTextPaint);
         }
     }
 
