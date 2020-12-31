@@ -29,11 +29,11 @@ public class Ball {
         pos.y += speedY * dirY;
     }
 
-    public void reset(int fieldCenterX, int fieldCenterY) {
+    public void reset(int fieldCenterX, int fieldCenterY, int opponentBrain) {
         pos.x = fieldCenterX;
         pos.y = fieldCenterY;
-        speedX = 6;
-        speedY = 6;
+        speedX = 7 + opponentBrain / 3;
+        speedY = 7 + opponentBrain / 3;
         dirX = 1;
         dirY = 1;
     }

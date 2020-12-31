@@ -3,6 +3,8 @@ package com.example.pong;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Point;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -136,18 +138,18 @@ public class Drawer {
         gameStartTextPaint.setColor(Color.WHITE);
         gameStartTextPaint.setTextAlign(Paint.Align.CENTER);
 
-        if (displayGameStartText) {
+        /*if (displayGameStartText) {
             String opponentSkillText = "Opponent Skill ";
             String opponentScoreText = "Opponent Score ";
             String playerScoreText = "Player Score ";
             canvas.drawText(opponentSkillText.substring(0, displayTextEndIndex(opponentSkillText.length(), pointStage, timeToNextStage)) + opponentBrain.getBrain(), FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 3, gameStartTextPaint);
             canvas.drawText(opponentScoreText.substring(0, displayTextEndIndex(opponentScoreText.length(), pointStage, timeToNextStage)) + opponentScore, FIELD_CENTER_X, FIELD_CENTER_Y - SCREEN_BLOCK * 2 + 15, gameStartTextPaint);
             canvas.drawText(playerScoreText.substring(0, displayTextEndIndex(playerScoreText.length(), pointStage, timeToNextStage)) + playerScore, FIELD_CENTER_X, FIELD_CENTER_Y + SCREEN_BLOCK * 2 + 15, gameStartTextPaint);
-        } else {
-            canvas.drawText(Integer.toString(opponentBrain.getBrain()), SCREEN_WIDTH - 110, SCREEN_BLOCK - 40, scoreTextPaint);
-            canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - 30, SCREEN_BLOCK - 40, scoreTextPaint);
-            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - 30, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 2 + 10, scoreTextPaint);
-        }
+        } else {*/
+            canvas.drawText("Opponent skill: " + Integer.toString(opponentBrain.getBrain()), SCREEN_BLOCK - SCREEN_BLOCK / 3, SCREEN_HEIGHT - SCREEN_BLOCK, scoreTextPaint);
+            canvas.drawText(Integer.toString(opponentScore), SCREEN_BLOCK - SCREEN_BLOCK / 3, SCREEN_BLOCK - SCREEN_BLOCK / 2, scoreTextPaint);
+            canvas.drawText(Integer.toString(playerScore), SCREEN_BLOCK - SCREEN_BLOCK / 3, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 2 + 10, scoreTextPaint);
+        // }
     }
 
     public void drawForeground(Canvas canvas, List<Object> goalPosts) {
@@ -160,7 +162,7 @@ public class Drawer {
         }
     }
 
-    public  void drawScreenBlockGrid(Canvas canvas) {
+    public void drawScreenBlockGrid(Canvas canvas) {
         for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH; i += SCREEN_BLOCK) {
             canvas.drawLine(i, 0, i, SCREEN_HEIGHT, redPaint);
         }

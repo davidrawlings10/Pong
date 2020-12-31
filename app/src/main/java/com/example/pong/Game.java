@@ -3,13 +3,15 @@ package com.example.pong;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Ball ball;
     private Object player;
     private Object opponent;
-    private List<Object> goalPosts;
+    private List<Object> goalContainer;
 
     private OpponentBrain opponentBrain;
 
@@ -50,7 +52,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         opponentBrain = new OpponentBrain();
 
-        TIME_BETWEEN_STAGES = 150;
+        TIME_BETWEEN_STAGES = 50;
 
         drawer = new Drawer(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, TIME_BETWEEN_STAGES, getFieldCenterX(), getFieldCenterY(), getFieldBottomY());
 
@@ -78,11 +80,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         ball = new Ball(SCREEN_BLOCK / 4);
         player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, getFieldBottomY() - SCREEN_BLOCK - SCREEN_BLOCK / 2);
         opponent = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_BLOCK * 4);
-        goalPosts = new ArrayList<>();
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top left
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top right
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom left
-        goalPosts.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom right
+        goalContainer = new ArrayList<>();
+        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top left
+        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top right
+        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom left
+        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom right
+        goalContainer.add(new Object(SCREEN_WIDTH, SCREEN_BLOCK, 0, getFieldBottomY() + SCREEN_BLOCK / 2 + SCREEN_BLOCK / 5)); // bottom back
     }
 
     // DIMENSION HELPERS ---------------------------------------------------------------------------
@@ -90,9 +93,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         return SCREEN_WIDTH / 2;
     }
 
-    private int getFieldBottomY() {
-        return (SCREEN_HEIGHT - SCREEN_BLOCK * 3) /*- SCREEN_BLOCK / 2*/;
-    }
+    private int getFieldBottomY() { return (SCREEN_HEIGHT - SCREEN_BLOCK * 3); }
 
     private int getFieldCenterY() {
         return getFieldBottomY() / 2;
@@ -107,7 +108,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void pointSetup() {
-        ball.reset(getFieldCenterX(), getFieldCenterY());
+        ball.reset(getFieldCenterX(), getFieldCenterY(), opponentBrain.getBrain());
         timeToNextStage = TIME_BETWEEN_STAGES;
     }
 
@@ -196,7 +197,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             opponentBrain.ballCollision();
         }
 
-        for (Object goalPost : goalPosts) {
+        for (Object goalPost : goalContainer) {
             CollisionDirection collisionDirectionGoalPost = ball.testCollision(goalPost);
             if (collisionDirectionGoalPost != null) {
                 opponentBrain.ballCollision();
@@ -235,11 +236,39 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
+        /*Paint paint = new Paint();
+
+        paint.setColor(android.graphics.Color.BLACK);
+        canvas.drawPaint(paint);
+
+        paint.setStrokeWidth(4);
+        paint.setColor(android.graphics.Color.RED);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setAntiAlias(true);
+
+        Point a = new Point(95, 0);
+        Point b = new Point(0, 69);
+        Point c = new Point(36, 181);
+        Point d = new Point(154, 181);
+        Point e = new Point(190, 69);
+
+        Path path = new Path();
+        path.setFillType(Path.FillType.EVEN_ODD);
+        path.moveTo(a.x, a.y);
+        path.lineTo(b.x, b.y);
+        path.lineTo(c.x, c.y);
+        path.lineTo(d.x, d.y);
+        path.lineTo(e.x, e.y);
+        path.lineTo(a.x, a.y);
+        path.close();
+
+        canvas.drawPath(path, paint);*/
+
         drawer.drawBackground(canvas);
         drawer.drawObjects(canvas, ball, player, opponent);
-        drawer.drawForeground(canvas, goalPosts);
+        drawer.drawForeground(canvas, goalContainer);
         drawer.drawText(canvas, opponentBrain, playerScore, opponentScore, pointStage, timeToNextStage);
 
-        // drawer.drawScreenBlockGrid(canvas);
+        // drawer.drawScreenBlockGrid(canvas); // drawing helper
     }
 }

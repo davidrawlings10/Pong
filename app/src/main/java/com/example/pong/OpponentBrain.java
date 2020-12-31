@@ -1,16 +1,20 @@
 package com.example.pong;
 
 import android.graphics.Point;
+import java.util.Random;
 
 public class OpponentBrain {
     private int brain;
     private int responseSpeed;
     private int responseDelay;
     private int timeToResponse;
+    private Random random;
 
     public OpponentBrain() {
         brain = 0;
         updateBrain(brain);
+        random = new Random();
+        random.setSeed(/*TODO: how to seed this*/ 0);
     }
 
     public Point getOpponentPos(Object opponent, Ball ball, PointStage pointStage) {
@@ -24,10 +28,10 @@ public class OpponentBrain {
 
         if (ballPos.y > opponentPos.y) {
             if (ball.getDirY() == -1) {
-                opponentPos.y -= responseSpeed;
+                opponentPos.y -= (Math.min(responseSpeed, 5));
             } else {
                 if (pointStage.equals(PointStage.PLAYING)) {
-                    opponentPos.y += responseSpeed;
+                    opponentPos.y += (Math.min(responseSpeed, 5));
                 }
             }
         }
@@ -36,13 +40,13 @@ public class OpponentBrain {
         }
 
         if (ballPos.x > opponentPos.x) {
-            opponentPos.x += responseSpeed * 4;
+            opponentPos.x += responseSpeed * 8;
             if (opponentPos.x > ballPos.x) {
                 opponentPos.x = ballPos.x;
             }
         }
         if (ballPos.x < opponentPos.x) {
-            opponentPos.x -= responseSpeed * 4;
+            opponentPos.x -= responseSpeed * 8;
             if (opponentPos.x < ballPos.x) {
                 opponentPos.x = ballPos.x;
             }
@@ -54,7 +58,10 @@ public class OpponentBrain {
     public void updateBrain(int brain) {
         this.brain = brain;
         responseSpeed = 3 + brain / 3;
-        responseDelay = 20 - brain;
+        int responseDelayPotential = 30 - brain * 2;
+        responseDelay = Math.max(responseDelayPotential, 0);
+        System.out.println("responseSpeed:"+responseSpeed);
+        System.out.println("responseDelay:"+responseDelay);
     }
 
     public int getBrain() {
@@ -62,6 +69,7 @@ public class OpponentBrain {
     }
 
     public void ballCollision() {
-        timeToResponse = responseDelay;
+        timeToResponse = responseDelay + random.nextInt(10);
+        System.out.println("timeToResponse:"+timeToResponse);
     }
 }
