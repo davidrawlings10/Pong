@@ -60,7 +60,6 @@ public class Drawer {
     public void drawBackground(Canvas canvas) {
         canvas.drawColor(Color.rgb(0,175,0));
 
-
         /*for (int i = 0; i < FIELD_BOTTOM_Y; i++) {
             canvas.drawRect(0, SCREEN_BLOCK * 3 * i - SCREEN_BLOCK * 2, SCREEN_WIDTH, SCREEN_BLOCK * 3 * i + SCREEN_BLOCK * 3 - SCREEN_BLOCK * 2, (i % 2 == 0 ? greenPaint : darkGreenPaint));
         }*/
@@ -122,9 +121,6 @@ public class Drawer {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void drawObjects(Canvas canvas, Ball ball, Object player, Object opponent) {
-        /*Paint blackPaint = new Paint(); `1
-        blackPaint.setColor(Color.BLACK);*/
-
         ball.draw(canvas);
         player.draw(canvas, blackPaint);
         opponent.draw(canvas, blackPaint);
@@ -155,20 +151,6 @@ public class Drawer {
     }
 
     public void drawForeground(Canvas canvas, List<Object> goalPosts) {
-        /* Paint paint = new Paint(); `1
-        paint.setColor(Color.WHITE);
-
-        Paint greenPaint = new Paint();
-        greenPaint.setColor(Color.rgb(0,175,0));*/
-
-        // nets
-        /*for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH - SCREEN_BLOCK * 2; i += 25) { `1
-            canvas.drawLine(i, 0, SCREEN_BLOCK + i, SCREEN_BLOCK, whitePaint);
-            canvas.drawLine(SCREEN_BLOCK + i, 0, i, SCREEN_BLOCK, whitePaint);
-            canvas.drawLine(i, FIELD_BOTTOM_Y, SCREEN_BLOCK + i, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint);
-            canvas.drawLine(SCREEN_BLOCK + i, FIELD_BOTTOM_Y, i, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint);
-        }*/
-
         for (List netLine : netLines) {
             canvas.drawLine((float) netLine.get(0), (float) netLine.get(1), (float) netLine.get(2), (float) netLine.get(3), whitePaint);
         }
@@ -179,9 +161,6 @@ public class Drawer {
     }
 
     public  void drawScreenBlockGrid(Canvas canvas) {
-        /* Paint paint = new Paint(); `1
-        paint.setColor(Color.RED);*/
-
         for (int i = SCREEN_BLOCK; i < SCREEN_WIDTH; i += SCREEN_BLOCK) {
             canvas.drawLine(i, 0, i, SCREEN_HEIGHT, redPaint);
         }
