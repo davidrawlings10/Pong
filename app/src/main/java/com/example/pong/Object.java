@@ -1,7 +1,7 @@
 package com.example.pong;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
+// import android.graphics.Color; `1
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -12,9 +12,9 @@ public class Object {
     private Point pos;
     private Rect rect;
     /*private Paint paint; `1
-    private Paint whitePaint;*/
+    private Paint whitePaint;
     private int xSpeed;
-    private int ySpeed;
+    private int ySpeed;*/
 
     public Object(int width, int height, int x, int y) {
         WIDTH = width;
@@ -26,10 +26,24 @@ public class Object {
     public void update(Point newPos, int SCREEN_BLOCK, int minX, int minY, int maxX, int maxY) {
         adjustPosForScreen(newPos, SCREEN_BLOCK, minX, minY, maxX, maxY);
 
-        xSpeed = pos.x - newPos.x;
-        ySpeed = pos.y - newPos.y;
+        int x = newPos.x, y = newPos.y;
 
-        pos.set(newPos.x, newPos.y);
+        if (newPos.x > pos.x) {
+            x = Math.min(newPos.x, pos.x + 60);
+        } else if (newPos.x < pos.x) {
+            x = Math.max(newPos.x, pos.x - 60);
+        }
+
+        if (newPos.y > pos.y) {
+            y = Math.min(newPos.y, pos.y + 80);
+        } else if (newPos.y < pos.y) {
+            y = Math.max(newPos.y, pos.y - 25);
+        }
+
+        // xSpeed = pos.x - newPos.x;
+        // ySpeed = pos.y - newPos.y;
+
+        pos.set(x, y);
     }
 
     private Point adjustPosForScreen(Point newPos, int SCREEN_BLOCK, int minX, int minY, int maxX, int maxY) {
@@ -78,7 +92,7 @@ public class Object {
         return pos.x + WIDTH / 2;
     }
 
-    public int getxSpeed() {
+    /*public int getxSpeed() { `1
         return xSpeed;
     }
 
@@ -92,5 +106,5 @@ public class Object {
 
     public void setySpeed(int ySpeed) {
         this.ySpeed = ySpeed;
-    }
+    }*/
 }

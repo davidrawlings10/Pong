@@ -3,9 +3,6 @@ package com.example.pong;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -21,14 +18,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private MainThread mainThread;
 
-    private int SCREEN_HEIGHT;
-    private int SCREEN_WIDTH;
-    private int SCREEN_BLOCK;
+    private final int SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_CENTER_Y, FIELD_BOTTOM_Y, TIME_BETWEEN_STAGES;
 
     private Ball ball;
     private Object player;
     private Object opponent;
-    private List<Object> goalContainer;
+    private List<Object> goalContainers; // objects for the ball to bounce off
 
     private OpponentBrain opponentBrain;
 
@@ -38,7 +33,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private PointStage pointStage;
 
     private int timeToNextStage;
-    private int TIME_BETWEEN_STAGES;
 
     Drawer drawer;
 
@@ -46,22 +40,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public Game(Context context) {
         super(context);
 
-        initializeCoreProperties();
-
-        initializeObjects();
-
-        opponentBrain = new OpponentBrain();
-
-        TIME_BETWEEN_STAGES = 50;
-
-        drawer = new Drawer(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, TIME_BETWEEN_STAGES, getFieldCenterX(), getFieldCenterY(), getFieldBottomY());
-
-        pointStage = PointStage.BEFORE;
-        timeToNextStage = TIME_BETWEEN_STAGES;
-        gameSetup();
-    }
-
-    private void initializeCoreProperties() {
         getHolder().addCallback(this);
         setFocusable(true);
 
@@ -74,22 +52,52 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         SCREEN_HEIGHT = displayMetrics.heightPixels;
         SCREEN_WIDTH = displayMetrics.widthPixels;
         SCREEN_BLOCK = (int)Math.round(SCREEN_HEIGHT * 0.05);
+        FIELD_CENTER_X = SCREEN_WIDTH / 2;
+        FIELD_CENTER_Y =  (SCREEN_HEIGHT - SCREEN_BLOCK * 3) / 2;
+        FIELD_BOTTOM_Y = SCREEN_HEIGHT - SCREEN_BLOCK * 3;
+
+        TIME_BETWEEN_STAGES = 50;
+
+        initializeObjects();
+
+        opponentBrain = new OpponentBrain();
+
+        drawer = new Drawer(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_CENTER_Y, FIELD_BOTTOM_Y, TIME_BETWEEN_STAGES);
+
+        pointStage = PointStage.BEFORE;
+        // timeToNextStage = TIME_BETWEEN_STAGES;
+        gameSetup();
     }
+
+    /*private void initializeCoreProperties() {
+        getHolder().addCallback(this);
+        setFocusable(true);
+
+        mainThread = new MainThread(getHolder(), this);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) getContext()).getWindowManager()
+                .getDefaultDisplay()
+                .getMetrics(displayMetrics);
+
+        SCREEN_HEIGHT = displayMetrics.heightPixels;
+        SCREEN_WIDTH = displayMetrics.widthPixels;
+        SCREEN_BLOCK = (int)Math.round(SCREEN_HEIGHT * 0.05);
+    }*/
 
     private void initializeObjects() {
         ball = new Ball(SCREEN_BLOCK / 4);
-        player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, getFieldBottomY() - SCREEN_BLOCK - SCREEN_BLOCK / 2);
+        player = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, FIELD_BOTTOM_Y - SCREEN_BLOCK - SCREEN_BLOCK / 2);
         opponent = new Object(SCREEN_BLOCK * 4, SCREEN_BLOCK, SCREEN_WIDTH / 2, SCREEN_BLOCK * 4);
-        goalContainer = new ArrayList<>();
-        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top left
-        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top right
-        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom left
-        goalContainer.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, getFieldBottomY() - SCREEN_BLOCK / 2)); // bottom right
-        goalContainer.add(new Object(SCREEN_WIDTH, SCREEN_BLOCK, 0, getFieldBottomY() + SCREEN_BLOCK / 2 + SCREEN_BLOCK / 5)); // bottom back
+        goalContainers = new ArrayList<>();
+        goalContainers.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top left
+        goalContainers.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK / 2)); // top right
+        goalContainers.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK / 2 + 1)); // bottom left
+        goalContainers.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK / 2 + 1)); // bottom right
+        goalContainers.add(new Object(SCREEN_WIDTH, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_BOTTOM_Y + SCREEN_BLOCK)); // bottom back
     }
 
     // DIMENSION HELPERS ---------------------------------------------------------------------------
-    private int getFieldCenterX() {
+    /*private int getFieldCenterX() {
         return SCREEN_WIDTH / 2;
     }
 
@@ -97,7 +105,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private int getFieldCenterY() {
         return getFieldBottomY() / 2;
-    }
+    }*/
 
     // SETUP ---------------------------------------------------------------------------------------
     private void gameSetup() {
@@ -108,7 +116,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void pointSetup() {
-        ball.reset(getFieldCenterX(), getFieldCenterY(), opponentBrain.getBrain());
+        ball.reset(FIELD_CENTER_X, FIELD_CENTER_Y, opponentBrain.getBrain());
         timeToNextStage = TIME_BETWEEN_STAGES;
     }
 
@@ -141,8 +149,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             int touchX = (int)event.getX();
             int touchY = (int)event.getY() - SCREEN_BLOCK * 2;
 
-            int minY = pointStage.equals(PointStage.BEFORE) ? getFieldCenterY() + SCREEN_BLOCK : SCREEN_BLOCK;
-            player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, getFieldBottomY() - SCREEN_BLOCK - SCREEN_BLOCK / 2);
+            int minY = pointStage.equals(PointStage.BEFORE) ? FIELD_CENTER_Y + SCREEN_BLOCK : SCREEN_BLOCK;
+            player.update(new Point(touchX, touchY), SCREEN_BLOCK, 0, minY, SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK - SCREEN_BLOCK / 2);
         }
 
         return true;
@@ -156,7 +164,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void handleGameFlow() {
-        if (pointStage.equals(PointStage.BEFORE)) {
+        final int END_SCORE = 3;
+
+        if (pointStage.equals(PointStage.PLAYING)) {
+            ball.updatePos();
+        } else if (pointStage.equals(PointStage.BEFORE)) {
             timeToNextStage -= 1;
             if (timeToNextStage == 0) {
                 drawer.setDisplayGameStartText(false);
@@ -166,22 +178,28 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             timeToNextStage -= 1;
             if (timeToNextStage == 0) {
                 pointSetup();
-                if (playerScore == 3 || opponentScore == 3) {
+                if (playerScore == END_SCORE || opponentScore == END_SCORE) {
                     gameSetup();
                 }
                 pointStage = PointStage.BEFORE;
                 timeToNextStage = TIME_BETWEEN_STAGES;
+
+                player.setPos(getPlayerPosForBeforePoint());
             }
+
             if (ball.getSpeedY() > 0) {
                 ball.setSpeedY(ball.getSpeedY() - 1);
             }
             if (ball.getSpeedX() > 0) {
                 ball.setSpeedX(ball.getSpeedX() - 1);
             }
-            ball.updatePos();
-        } else if (pointStage.equals(PointStage.PLAYING)) {
+
             ball.updatePos();
         }
+    }
+
+    private Point getPlayerPosForBeforePoint() {
+        return new Point(player.getPos().x, Math.max(player.getPos().y, FIELD_CENTER_Y + SCREEN_BLOCK));
     }
 
     private void updateOpponent() {
@@ -197,37 +215,44 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             opponentBrain.ballCollision();
         }
 
-        for (Object goalPost : goalContainer) {
+        for (Object goalPost : goalContainers) {
             CollisionDirection collisionDirectionGoalPost = ball.testCollision(goalPost);
             if (collisionDirectionGoalPost != null) {
                 opponentBrain.ballCollision();
             }
         }
 
-        if (ball.getTop() <= 0 && pointStage == PointStage.PLAYING) {
+        if (ball.getTop() <= 0
+                && ball.getLeft() >= goalContainers.get(0).getRight() && ball.getRight() <= goalContainers.get(1).getLeft() // ensure that the ball is actually in the goal
+                && pointStage == PointStage.PLAYING) {
             playerScore += 1;
             handleGoal();
         }
-        if (ball.getBottom() >= getFieldBottomY() && pointStage == PointStage.PLAYING) {
+        if (ball.getBottom() >= FIELD_BOTTOM_Y
+                && ball.getLeft() >= goalContainers.get(0).getRight() && ball.getRight() <= goalContainers.get(1).getLeft() // ensure that the ball is actually in the goal
+                && pointStage == PointStage.PLAYING) {
             opponentScore += 1;
             handleGoal();
         }
     }
 
     private void handleGoal() {
-        pointStage = PointStage.AFTER;
-        if (playerScore == 3 || opponentScore == 3) {
+        /*if (playerScore == 3 || opponentScore == 3) {
             gameEnd();
-        }
-        timeToNextStage = TIME_BETWEEN_STAGES + 50;
+        } */
+
+        pointStage = PointStage.AFTER;
+        timeToNextStage = TIME_BETWEEN_STAGES;
+
+        // make ball bounce off net
         ball.setDirY(ball.getDirY() * -1);
-        ball.setSpeedY(ball.getSpeedY() * 2/3);
-        ball.setSpeedX(ball.getSpeedX() * 2/3);
+        ball.setSpeedY(ball.getSpeedY() / 2);
+        ball.setSpeedX(ball.getSpeedX() / 2);
     }
 
     private void gameEnd() {
-        TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
-        drawer.setDisplayGameStartText(false);
+        // TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
+        // drawer.setDisplayGameStartText(false);
     }
 
     // DRAW ----------------------------------------------------------------------------------------
@@ -264,9 +289,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         canvas.drawPath(path, paint);*/
 
-        drawer.drawBackground(canvas);
+        drawer.drawField(canvas);
         drawer.drawObjects(canvas, ball, player, opponent);
-        drawer.drawForeground(canvas, goalContainer);
+        drawer.drawGoal(canvas, goalContainers);
         drawer.drawText(canvas, opponentBrain, playerScore, opponentScore, pointStage, timeToNextStage);
 
         // drawer.drawScreenBlockGrid(canvas); // drawing helper

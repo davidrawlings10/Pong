@@ -32,8 +32,8 @@ public class Ball {
     public void reset(int fieldCenterX, int fieldCenterY, int opponentBrain) {
         pos.x = fieldCenterX;
         pos.y = fieldCenterY;
-        speedX = 7 + opponentBrain / 3;
-        speedY = 7 + opponentBrain / 3;
+        speedX = 7 + opponentBrain / 2;
+        speedY = 7 + opponentBrain / 2;
         dirX = 1;
         dirY = 1;
     }
@@ -70,13 +70,21 @@ public class Ball {
     public void handleCollision(Object object, CollisionDirection collisionDirection) {
         if (collisionDirection.equals(CollisionDirection.TOP)) {
             dirY *= -1;
-            speedX += 1;
-            speedY += 1;
+            if (speedX < 40) {
+                speedX += 1;
+            }
+            if (speedY < 40) {
+                speedY += 1;
+            }
             pos.y = object.getBottom() + RADIUS + 25;
         } else if (collisionDirection.equals(CollisionDirection.BOTTOM)) {
             dirY *= -1;
-            speedX += 1;
-            speedY += 1;
+            if (speedX < 40) {
+                speedX += 1;
+            }
+            if (speedY < 40) {
+                speedY += 1;
+            }
             pos.y = object.getTop() - RADIUS - 25;
         } else if (collisionDirection.equals(CollisionDirection.LEFT)) {
             dirX *= -1;
@@ -119,7 +127,7 @@ public class Ball {
         return collisionDirection;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    /*@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
@@ -127,7 +135,7 @@ public class Ball {
 
         // paint.setColor(Color.BLACK);
         // canvas.drawOval(pos.x - 16, pos.y - 16, pos.x + 10, pos.y + 10, paint);
-    }
+    }*/
 
     public void setPos(Point pos) {
         this.pos = pos;

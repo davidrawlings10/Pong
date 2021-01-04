@@ -60,8 +60,6 @@ public class OpponentBrain {
         responseSpeed = 3 + brain / 3;
         int responseDelayPotential = 30 - brain * 2;
         responseDelay = Math.max(responseDelayPotential, 0);
-        System.out.println("responseSpeed:"+responseSpeed);
-        System.out.println("responseDelay:"+responseDelay);
     }
 
     public int getBrain() {
@@ -70,6 +68,5 @@ public class OpponentBrain {
 
     public void ballCollision() {
         timeToResponse = responseDelay + random.nextInt(10);
-        System.out.println("timeToResponse:"+timeToResponse);
     }
 }
