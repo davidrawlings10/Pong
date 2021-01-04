@@ -40,13 +40,13 @@ public class OpponentBrain {
         }
 
         if (ballPos.x > opponentPos.x) {
-            opponentPos.x += responseSpeed * 8;
+            opponentPos.x += responseSpeed * 4;
             if (opponentPos.x > ballPos.x) {
                 opponentPos.x = ballPos.x;
             }
         }
         if (ballPos.x < opponentPos.x) {
-            opponentPos.x -= responseSpeed * 8;
+            opponentPos.x -= responseSpeed * 4;
             if (opponentPos.x < ballPos.x) {
                 opponentPos.x = ballPos.x;
             }

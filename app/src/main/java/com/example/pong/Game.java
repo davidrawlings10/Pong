@@ -208,18 +208,32 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void handleBallCollision() {
+        CollisionDirection collisionDirection = CollisionDirection.LEFT;
+
         CollisionDirection collisionDirectionWall = ball.testCollisionWall(SCREEN_WIDTH, SCREEN_HEIGHT);
+        if (collisionDirectionWall != null) {
+            collisionDirection = collisionDirectionWall;
+        }
+
         CollisionDirection collisionDirectionPlayer = ball.testCollision(player);
+        if (collisionDirectionPlayer != null) {
+            collisionDirection = collisionDirectionPlayer;
+        }
+
         CollisionDirection collisionDirectionOpponent = ball.testCollision(opponent);
-        if (collisionDirectionWall != null || collisionDirectionPlayer != null || collisionDirectionOpponent != null) {
-            opponentBrain.ballCollision();
+        if (collisionDirectionOpponent != null) {
+            collisionDirection = collisionDirectionOpponent;
         }
 
         for (Object goalPost : goalContainers) {
             CollisionDirection collisionDirectionGoalPost = ball.testCollision(goalPost);
             if (collisionDirectionGoalPost != null) {
-                opponentBrain.ballCollision();
+                collisionDirection = collisionDirectionOpponent;
             }
+        }
+
+        if (collisionDirection.equals(CollisionDirection.TOP) || collisionDirection.equals(CollisionDirection.BOTTOM)) {
+            opponentBrain.ballCollision();
         }
 
         if (ball.getTop() <= 0
@@ -261,6 +275,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
+        drawer.drawField(canvas);
+        drawer.drawObjects(canvas, ball, player, opponent);
+        drawer.drawGoal(canvas, goalContainers);
+        drawer.drawText(canvas, opponentBrain, playerScore, opponentScore, pointStage, timeToNextStage);
+
+        // drawer.drawScreenBlockGrid(canvas); // drawing helper
+
+
+
+
         /*Paint paint = new Paint();
 
         paint.setColor(android.graphics.Color.BLACK);
@@ -288,12 +312,5 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         path.close();
 
         canvas.drawPath(path, paint);*/
-
-        drawer.drawField(canvas);
-        drawer.drawObjects(canvas, ball, player, opponent);
-        drawer.drawGoal(canvas, goalContainers);
-        drawer.drawText(canvas, opponentBrain, playerScore, opponentScore, pointStage, timeToNextStage);
-
-        // drawer.drawScreenBlockGrid(canvas); // drawing helper
     }
 }
