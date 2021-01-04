@@ -40,7 +40,7 @@ public class Object {
             y = Math.max(newPos.y, pos.y - 25);
         }
 
-        // xSpeed = pos.x - newPos.x;
+        // xSpeed = pos.x - newPos.x; `1
         // ySpeed = pos.y - newPos.y;
 
         pos.set(x, y);
@@ -59,10 +59,10 @@ public class Object {
         return pos;
     }
 
-    public void draw(Canvas canvas, Paint paint) {
+    /* public void draw(Canvas canvas, Paint paint) { `1
         rect.set(pos.x - WIDTH/2, pos.y - HEIGHT/2, pos.x + WIDTH/2, pos.y + HEIGHT/2);
         canvas.drawRect(rect, paint);
-    }
+    } */
 
     public void setPos(Point pos) {
         this.pos = pos;
