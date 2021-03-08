@@ -65,7 +65,6 @@ public class Drawer {
         canvas.drawColor(Color.rgb(0,175,0));
 
         for (int i = SCREEN_BLOCK / 2 * -1; i < FIELD_BOTTOM_Y; i += SCREEN_BLOCK * 4) {
-            // canvas.drawRect(0, SCREEN_BLOCK * 3 * i - SCREEN_BLOCK * 2, SCREEN_WIDTH, SCREEN_BLOCK * 3 * i + SCREEN_BLOCK * 3 - SCREEN_BLOCK * 2, (i % 2 == 0 ? greenPaint : darkGreenPaint));
             canvas.drawRect(0, i, SCREEN_WIDTH, i + SCREEN_BLOCK * 2, darkGreenPaint);
         }
 
@@ -75,76 +74,42 @@ public class Drawer {
         paint.setStyle(Paint.Style.STROKE);
 
         // midline
-        // canvas.drawRect(0, FIELD_CENTER_Y - LINE_WIDTH / 2, SCREEN_WIDTH, FIELD_CENTER_Y + LINE_WIDTH / 2, whitePaint); `1
         canvas.drawLine(0, FIELD_CENTER_Y, SCREEN_WIDTH, FIELD_CENTER_Y, whitePaint);
 
         // goal lines
-        // canvas.drawRect(0, SCREEN_BLOCK, SCREEN_WIDTH, SCREEN_BLOCK + LINE_WIDTH, whitePaint); // top goal line `1
-        // canvas.drawRect(0, FIELD_BOTTOM_Y - SCREEN_BLOCK - LINE_WIDTH, SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint); // bottom goal line `1
         canvas.drawLine(0, SCREEN_BLOCK, SCREEN_WIDTH, SCREEN_BLOCK, whitePaint);
         canvas.drawLine(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint);
 
         // side lines
-        // canvas.drawRect(0, 0, LINE_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint); `1
-        // canvas.drawRect(SCREEN_WIDTH - LINE_WIDTH, 0, SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint); `1
         canvas.drawRect(0, 0, 0, FIELD_BOTTOM_Y, whitePaint);
         canvas.drawRect(SCREEN_WIDTH, 0, SCREEN_WIDTH, FIELD_BOTTOM_Y, whitePaint);
 
         // top goal box
         canvas.drawRect(SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK * 4, whitePaint);
-        // canvas.drawRect(SCREEN_BLOCK, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, SCREEN_BLOCK * 4, darkGreenPaint); `1
 
         // bottom goal box
         canvas.drawRect(SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 4, SCREEN_WIDTH - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK, whitePaint);
-        // canvas.drawRect(SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 4, SCREEN_WIDTH - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK, darkGreenPaint); `1
 
         // center circle
         canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, SCREEN_BLOCK * 4/3, whitePaint);
-        // canvas.drawCircle(FIELD_CENTER_X, FIELD_CENTER_Y, SCREEN_BLOCK * 4/3 - LINE_WIDTH, darkGreenPaint); `1
 
         // top goal box circle
-        // canvas.drawOval(FIELD_CENTER_X - SCREEN_BLOCK - LINE_WIDTH, SCREEN_BLOCK * 3 + SCREEN_BLOCK / 2 - LINE_WIDTH, FIELD_CENTER_X + SCREEN_BLOCK + LINE_WIDTH, SCREEN_BLOCK * 4 + SCREEN_BLOCK / 2 + LINE_WIDTH, whitePaint); `1
-        // canvas.drawOval(FIELD_CENTER_X - SCREEN_BLOCK, SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2, FIELD_CENTER_X + SCREEN_BLOCK, SCREEN_BLOCK * 4 + SCREEN_BLOCK / 2, greenPaint); `1
         canvas.drawArc(FIELD_CENTER_X - SCREEN_BLOCK - LINE_WIDTH, SCREEN_BLOCK * 3 + SCREEN_BLOCK / 2 - LINE_WIDTH, FIELD_CENTER_X + SCREEN_BLOCK + LINE_WIDTH, SCREEN_BLOCK * 4 + SCREEN_BLOCK / 2 + LINE_WIDTH, 0, 180, true, whitePaint);
 
         // bottom goal box circles
-        // canvas.drawOval(FIELD_CENTER_X - SCREEN_BLOCK - LINE_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2 - LINE_WIDTH, FIELD_CENTER_X + SCREEN_BLOCK + LINE_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK * 3 - SCREEN_BLOCK / 2 + LINE_WIDTH, whitePaint); `1
-        // canvas.drawOval(FIELD_CENTER_X - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2, FIELD_CENTER_X + SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 3 + SCREEN_BLOCK / 2, greenPaint); `1
         canvas.drawArc(FIELD_CENTER_X - SCREEN_BLOCK , FIELD_BOTTOM_Y - SCREEN_BLOCK * 4 - SCREEN_BLOCK / 2, FIELD_CENTER_X + SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK * 3 - SCREEN_BLOCK / 2, 180, 180, true, whitePaint);
 
         // corner circles
-        // canvas.drawCircle(0, SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint); `1
-        // canvas.drawCircle(0, SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint); `1
         canvas.drawArc(0 - SCREEN_BLOCK / 3, SCREEN_BLOCK - SCREEN_BLOCK / 3, 0 + SCREEN_BLOCK / 3, SCREEN_BLOCK + SCREEN_BLOCK / 3, 0, 90, true, whitePaint); // top left
-
-        // canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint); `1
-        // canvas.drawCircle(SCREEN_WIDTH, SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint); `1
         canvas.drawArc(SCREEN_WIDTH - SCREEN_BLOCK / 3, SCREEN_BLOCK - SCREEN_BLOCK / 3, SCREEN_WIDTH + SCREEN_BLOCK / 3, SCREEN_BLOCK + SCREEN_BLOCK / 3, 90, 90, true, whitePaint); // top right
-
-        // canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint); `1
-        // canvas.drawCircle(0, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint); `1
         canvas.drawArc(0 - SCREEN_BLOCK / 3, FIELD_BOTTOM_Y - SCREEN_BLOCK - SCREEN_BLOCK / 3, 0 + SCREEN_BLOCK / 3, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 3, 180, 90, true, whitePaint); // bottom left
-
-        // canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3, whitePaint); `1
-        // canvas.drawCircle(SCREEN_WIDTH, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK / 3 - LINE_WIDTH, greenPaint); `1
         canvas.drawArc(SCREEN_WIDTH - SCREEN_BLOCK / 3, FIELD_BOTTOM_Y - SCREEN_BLOCK - SCREEN_BLOCK / 3, SCREEN_WIDTH + SCREEN_BLOCK / 3, FIELD_BOTTOM_Y - SCREEN_BLOCK + SCREEN_BLOCK / 3, 270, 90, true, whitePaint); // bottom right
-
-        // net border
-        /*canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_BLOCK * 2 + LINE_WIDTH, SCREEN_BLOCK, whitePaint); `1
-        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2 - LINE_WIDTH, SCREEN_BLOCK, whitePaint);
-        canvas.drawRect(SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_BLOCK * 2 + LINE_WIDTH, FIELD_BOTTOM_Y, whitePaint);
-        canvas.drawRect(SCREEN_WIDTH - SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK * 2 - LINE_WIDTH, FIELD_BOTTOM_Y, whitePaint);
-        canvas.drawRect(SCREEN_BLOCK * 2, 0, SCREEN_WIDTH - SCREEN_BLOCK * 2, LINE_WIDTH, whitePaint);
-        canvas.drawRect(SCREEN_BLOCK * 2, FIELD_BOTTOM_Y, SCREEN_WIDTH - SCREEN_BLOCK * 2, FIELD_BOTTOM_Y - LINE_WIDTH, whitePaint);*/
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void drawObjects(Canvas canvas, Ball ball, Object player, Object opponent) {
-        // ball.draw(canvas); `1
         canvas.drawCircle(ball.getPos().x, ball.getPos().y, ball.getRADIUS(), blackPaint);
 
-        // player.draw(canvas, blackPaint); `1
-        // opponent.draw(canvas, blackPaint); `1
         drawObject(canvas, player, blackPaint);
         drawObject(canvas, opponent, blackPaint);
     }

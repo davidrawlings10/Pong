@@ -1,8 +1,5 @@
 package com.example.pong;
 
-import android.graphics.Canvas;
-// import android.graphics.Color; `1
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
@@ -11,8 +8,7 @@ public class Object {
     final private int HEIGHT;
     private Point pos;
     private Rect rect;
-    /*private Paint paint; `1
-    private Paint whitePaint;
+    /*
     private int xSpeed;
     private int ySpeed;*/
 
@@ -58,11 +54,6 @@ public class Object {
 
         return pos;
     }
-
-    /* public void draw(Canvas canvas, Paint paint) { `1
-        rect.set(pos.x - WIDTH/2, pos.y - HEIGHT/2, pos.x + WIDTH/2, pos.y + HEIGHT/2);
-        canvas.drawRect(rect, paint);
-    } */
 
     public void setPos(Point pos) {
         this.pos = pos;

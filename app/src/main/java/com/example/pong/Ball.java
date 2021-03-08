@@ -1,8 +1,5 @@
 package com.example.pong;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Build;
 
@@ -11,7 +8,6 @@ import androidx.annotation.RequiresApi;
 public class Ball {
     final private int RADIUS;
     private Point pos;
-    // private Paint paint; `1
     private int speedX;
     private int speedY;
     private int dirY;
@@ -19,8 +15,6 @@ public class Ball {
 
     public Ball(int radius) {
         RADIUS = radius;
-        /* paint = new Paint(); `1
-        paint.setColor(Color.WHITE);*/
         pos = new Point();
     }
 
@@ -126,16 +120,6 @@ public class Ball {
 
         return collisionDirection;
     }
-
-    /*@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP) `1
-    public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
-        canvas.drawCircle(pos.x, pos.y, RADIUS, paint);
-
-        // paint.setColor(Color.BLACK);
-        // canvas.drawOval(pos.x - 16, pos.y - 16, pos.x + 10, pos.y + 10, paint);
-    }*/
 
     public void setPos(Point pos) {
         this.pos = pos;

@@ -65,24 +65,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         drawer = new Drawer(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_CENTER_Y, FIELD_BOTTOM_Y, TIME_BETWEEN_STAGES);
 
         pointStage = PointStage.BEFORE;
-        // timeToNextStage = TIME_BETWEEN_STAGES;
         gameSetup();
     }
-
-    /*private void initializeCoreProperties() {
-        getHolder().addCallback(this);
-        setFocusable(true);
-
-        mainThread = new MainThread(getHolder(), this);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) getContext()).getWindowManager()
-                .getDefaultDisplay()
-                .getMetrics(displayMetrics);
-
-        SCREEN_HEIGHT = displayMetrics.heightPixels;
-        SCREEN_WIDTH = displayMetrics.widthPixels;
-        SCREEN_BLOCK = (int)Math.round(SCREEN_HEIGHT * 0.05);
-    }*/
 
     private void initializeObjects() {
         ball = new Ball(SCREEN_BLOCK / 4);
@@ -95,17 +79,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         goalContainers.add(new Object(SCREEN_BLOCK * 2, SCREEN_BLOCK, SCREEN_WIDTH - SCREEN_BLOCK, FIELD_BOTTOM_Y - SCREEN_BLOCK / 2 + 1)); // bottom right
         goalContainers.add(new Object(SCREEN_WIDTH, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_BOTTOM_Y + SCREEN_BLOCK)); // bottom back
     }
-
-    // DIMENSION HELPERS ---------------------------------------------------------------------------
-    /*private int getFieldCenterX() {
-        return SCREEN_WIDTH / 2;
-    }
-
-    private int getFieldBottomY() { return (SCREEN_HEIGHT - SCREEN_BLOCK * 3); }
-
-    private int getFieldCenterY() {
-        return getFieldBottomY() / 2;
-    }*/
 
     // SETUP ---------------------------------------------------------------------------------------
     private void gameSetup() {
@@ -171,7 +144,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         } else if (pointStage.equals(PointStage.BEFORE)) {
             timeToNextStage -= 1;
             if (timeToNextStage == 0) {
-                drawer.setDisplayGameStartText(false);
+                // drawer.setDisplayGameStartText(false);
                 pointStage = PointStage.PLAYING;
             }
         } else if (pointStage.equals(PointStage.AFTER)) {
@@ -238,8 +211,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private void handleGoal() {
         /*if (playerScore == 3 || opponentScore == 3) {
-            gameEnd();
-        } */
+            drawer.setDisplayGameStartText(true);
+        }*/
 
         pointStage = PointStage.AFTER;
         timeToNextStage = TIME_BETWEEN_STAGES;
@@ -250,50 +223,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         ball.setSpeedX(ball.getSpeedX() / 2);
     }
 
-    private void gameEnd() {
-        // TIME_BETWEEN_STAGES += 50; // add a little extra time due to game end
-        // drawer.setDisplayGameStartText(false);
-    }
-
     // DRAW ----------------------------------------------------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        /*Paint paint = new Paint();
-
-        paint.setColor(android.graphics.Color.BLACK);
-        canvas.drawPaint(paint);
-
-        paint.setStrokeWidth(4);
-        paint.setColor(android.graphics.Color.RED);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        paint.setAntiAlias(true);
-
-        Point a = new Point(95, 0);
-        Point b = new Point(0, 69);
-        Point c = new Point(36, 181);
-        Point d = new Point(154, 181);
-        Point e = new Point(190, 69);
-
-        Path path = new Path();
-        path.setFillType(Path.FillType.EVEN_ODD);
-        path.moveTo(a.x, a.y);
-        path.lineTo(b.x, b.y);
-        path.lineTo(c.x, c.y);
-        path.lineTo(d.x, d.y);
-        path.lineTo(e.x, e.y);
-        path.lineTo(a.x, a.y);
-        path.close();
-
-        canvas.drawPath(path, paint);*/
-
         drawer.drawField(canvas);
         drawer.drawObjects(canvas, ball, player, opponent);
         drawer.drawGoal(canvas, goalContainers);
         drawer.drawText(canvas, opponentBrain, playerScore, opponentScore, pointStage, timeToNextStage);
-
-        // drawer.drawScreenBlockGrid(canvas); // drawing helper
     }
 }
