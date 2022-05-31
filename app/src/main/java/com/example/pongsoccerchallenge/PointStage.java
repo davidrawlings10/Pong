@@ -1,4 +1,4 @@
-package com.example.pong;
+package com.example.pongsoccerchallenge;
 
 enum PointStage {
     BEFORE, PLAYING, AFTER

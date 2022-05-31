@@ -1,4 +1,4 @@
-package com.example.pong;
+package com.example.pongsoccerchallenge;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;

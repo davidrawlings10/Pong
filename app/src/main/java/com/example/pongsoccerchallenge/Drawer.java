@@ -1,10 +1,8 @@
-package com.example.pong;
+package com.example.pongsoccerchallenge;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;

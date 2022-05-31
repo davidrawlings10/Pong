@@ -1,9 +1,6 @@
-package com.example.pong;
+package com.example.pongsoccerchallenge;
 
 import android.graphics.Point;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 public class Ball {
     final private int RADIUS;
