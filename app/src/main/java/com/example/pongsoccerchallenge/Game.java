@@ -36,6 +36,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     Drawer drawer;
 
+    private boolean isUserViewingInstructions;
+
     // INITIALIZE ----------------------------------------------------------------------------------
     public Game(Context context) {
         super(context);
@@ -64,8 +66,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         drawer = new Drawer(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BLOCK, FIELD_CENTER_X, FIELD_CENTER_Y, FIELD_BOTTOM_Y, TIME_BETWEEN_STAGES);
 
+        isUserViewingInstructions = true;
         pointStage = PointStage.BEFORE;
         gameSetup();
+    }
+
+    public void doneViewingInstructions() {
+        isUserViewingInstructions = false;
+        pointSetup();
     }
 
     private void initializeObjects() {
@@ -90,7 +98,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private void pointSetup() {
         ball.reset(FIELD_CENTER_X, FIELD_CENTER_Y, opponentBrain.getBrain());
-        timeToNextStage = TIME_BETWEEN_STAGES;
+        if (!isUserViewingInstructions) {
+            timeToNextStage = TIME_BETWEEN_STAGES;
+        }
     }
 
     // EVENTS --------------------------------------------------------------------------------------

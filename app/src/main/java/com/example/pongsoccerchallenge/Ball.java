@@ -26,7 +26,7 @@ public class Ball {
         speedX = 7 + opponentBrain / 2;
         speedY = 7 + opponentBrain / 2;
         dirX = 1;
-        dirY = 1;
+        dirY = -1;
     }
 
     public void handleCollisionWall(CollisionDirection collisionDirection) {
