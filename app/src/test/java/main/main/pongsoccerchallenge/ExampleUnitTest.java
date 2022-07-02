@@ -1,4 +1,4 @@
-package com.example.pongsoccerchallenge;
+package main.main.pongsoccerchallenge;
 
 import org.junit.Test;
 

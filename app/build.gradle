@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "com.example.pongsoccerchallenge"
+        applicationId "main.main.pongsoccerchallenge"
         minSdkVersion 16
         targetSdk 32
         versionCode 1

@@ -1,4 +1,4 @@
-package com.example.pongsoccerchallenge;
+package main.main.pongsoccerchallenge;
 
 import android.graphics.Point;
 import java.util.Random;

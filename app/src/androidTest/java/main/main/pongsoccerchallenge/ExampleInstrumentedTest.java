@@ -1,4 +1,4 @@
-package com.example.pongsoccerchallenge;
+package main.main.pongsoccerchallenge;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.pongsoccerchallenge", appContext.getPackageName());
+        assertEquals("main.main.pongsoccerchallenge", appContext.getPackageName());
     }
 }
